@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDF Survival Core — Commands & Permissions</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=JetBrains+Mono:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #111113;
+    --bg2:       #18181b;
+    --surface:   #1a1008;
+    --surface2:  #201408;
+    --border-raw: #3d2200;
+    --border:    rgba(255,255,255,0.07);
+    --border-o:  rgba(240,106,0,0.35);
+    --accent:    #f06a00;
+    --accent2:   #ff4500;
+    --orange:    #f06a00;
+    --orange-glow: #ff8c2a;
+    --gold:      #fbbf24;
+    --green:     #10b981;
+    --red:       #ef4444;
+    --text:      #b0b0b8;
+    --text-dim:  #8a7055;
+    --text-bright: #e8e8ec;
+    --white:     #ffffff;
+    --glow: 0 0 20px rgba(240,106,0,0.35);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ── CURSOR ── */
+  * { cursor: none !important; }
+  #cursor {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: var(--orange);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+    mix-blend-mode: screen;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 32px; height: 32px;
+    border: 1px solid rgba(240,106,0,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.12s ease, width 0.2s, height 0.2s, border-color 0.2s;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-o); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--orange); }
+
+  /* ── NOISE overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.5;
+  }
+
+  /* ── PARTICLE CANVAS ── */
+  #particle-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.35;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 1300px; margin: 0 auto; padding: 40px 24px; }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    margin-bottom: 52px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .logo-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--orange);
+    text-transform: uppercase;
+    border: 1px solid rgba(240,106,0,0.35);
+    padding: 4px 16px;
+    margin-bottom: 20px;
+    background: rgba(240,106,0,0.07);
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 7vw, 86px);
+    font-weight: 400;
+    letter-spacing: 4px;
+    line-height: 1;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+
+  h1 .accent { color: var(--orange); }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin: 28px 0 40px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--orange);
+    letter-spacing: 1px;
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 40px;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .filter-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    color: rgba(255,255,255,0.3);
+    cursor: pointer !important;
+    transition: all 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--orange);
+    color: var(--orange);
+    background: rgba(240,106,0,0.08);
+    box-shadow: var(--glow);
+  }
+
+  .filter-btn[data-cat="staff"].active { border-color: var(--red); color: var(--red); background: rgba(239,68,68,0.08); box-shadow: 0 0 20px rgba(239,68,68,0.2); }
+  .filter-btn[data-cat="usuario"].active { border-color: var(--green); color: var(--green); background: rgba(16,185,129,0.08); box-shadow: 0 0 20px rgba(16,185,129,0.2); }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-icon { font-size: 22px; }
+
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--orange);
+  }
+
+  .section-count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+  }
+
+  /* COMMAND GRID */
+  .cmd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 12px;
+  }
+
+  /* COMMAND CARD */
+  .cmd-card {
+    background: #18181b;
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s;
+    cursor: default !important;
+  }
+
+  .cmd-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+
+  .cmd-card.admin::before { background: var(--red); }
+  .cmd-card.usuario::before { background: var(--green); }
+  .cmd-card.ambos::before { background: linear-gradient(to bottom, var(--red), var(--green)); }
+
+  .cmd-card:hover {
+    border-color: rgba(240,106,0,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    background: #1f1f23;
+  }
+
+  .cmd-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .cmd-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .cmd-name span { color: var(--accent); }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .badge.admin { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+  .badge.usuario { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+  .badge.ambos { background: rgba(251,191,36,0.12); color: #fcd34d; border: 1px solid rgba(251,191,36,0.3); }
+  .badge.vip { background: rgba(251,191,36,0.18); color: #fde68a; border: 1px solid rgba(251,191,36,0.45); }
+
+  .cmd-card.vip::before { background: linear-gradient(to bottom, #fbbf24, #f59e0b); }
+  .filter-btn[data-cat="vip"].active { border-color: var(--gold); color: var(--gold); background: rgba(251,191,36,0.08); box-shadow: 0 0 20px rgba(251,191,36,0.2); }
+
+  .cmd-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  .cmd-perm {
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(138,112,85,0.7);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .perm-node {
+    background: rgba(255,119,0,0.06);
+    border: 1px solid rgba(255,119,0,0.15);
+    padding: 2px 6px;
+    color: rgba(255,119,0,0.6);
+    font-size: 9px;
+  }
+
+  .cmd-aliases {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .cmd-aliases em { color: rgba(255,119,0,0.6); font-style: normal; }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 48px;
+    padding: 20px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.25);
+    flex-wrap: wrap;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .legend-dot { width: 12px; height: 3px; border-radius: 2px; }
+
+  /* Search */
+  .search-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+
+  .search-box {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    background: #18181b;
+    border: 1px solid rgba(255,255,255,0.07);
+    color: #e8e8ec;
+    padding: 10px 20px;
+    width: 100%;
+    max-width: 480px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-box:focus { border-color: var(--orange); }
+  .search-box::placeholder { color: rgba(255,255,255,0.2); }
+
+  /* hidden */
+  .cmd-card.hidden { display: none; }
+  .section.all-hidden { display: none; }
+
+  /* BACK BUTTON */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    margin-bottom: 28px;
+    cursor: pointer !important;
+  }
+  .back-btn:hover {
+    color: #e8e8ec;
+    border-color: rgba(240,106,0,0.35);
+    background: rgba(240,106,0,0.06);
+  }
+  .back-btn svg { transition: transform 0.2s; }
+  .back-btn:hover svg { transform: translateX(-3px); }
+
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Particle canvas -->
+<canvas id="particle-canvas"></canvas>
+
+<div class="wrapper">
+
+  <div style="text-align:center; margin-bottom: 8px;">
+    <a class="back-btn" href="SDF_Survival_Core_-_Principal.html">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M8 6H4M4 6L6.5 3.5M4 6L6.5 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back to Main Page
+    </a>
+  </div>
+
+  <header>
+    <div class="logo-tag">// Plugin Documentation</div>
+    <h1><span class="accent">Commands</span> &amp; Permissions</h1>
+    <p class="subtitle">Complete reference — 150+ commands and permissions</p>
+
+    <div class="stats-bar">
+      <div class="stat"><span class="stat-num" id="total-count">0</span> Total Commands</div>
+      <div class="stat"><span class="stat-num" style="color:var(--red)" id="admin-count">0</span> Staff</div>
+      <div class="stat"><span class="stat-num" style="color:var(--gold)" id="vip-count">0</span> VIP</div>
+      <div class="stat"><span class="stat-num" style="color:var(--green)" id="user-count">0</span> Players</div>
+    </div>
+  </header>
+
+  <div class="search-wrap">
+    <input class="search-box" id="searchBox" type="text" placeholder="Search command or permission..." autocomplete="off">
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-cat="all">All</button>
+    <button class="filter-btn" data-cat="usuario">👤 Player</button>
+    <button class="filter-btn" data-cat="vip">⭐ VIP</button>
+    <button class="filter-btn" data-cat="staff">🛡 Staff</button>
+    <button class="filter-btn" data-cat="homes">🏠 Homes</button>
+    <button class="filter-btn" data-cat="economy">💰 Economy</button>
+    <button class="filter-btn" data-cat="combat">⚔ Combat</button>
+    <button class="filter-btn" data-cat="chat">💬 Chat</button>
+    <button class="filter-btn" data-cat="llaves">🔑 Keys</button>
+    <button class="filter-btn" data-cat="utility">🔧 Utility</button>
+    <button class="filter-btn" data-cat="clan">🏴 Clans</button>
+  </div>
+
+  <!-- HOMES -->
+  <div class="section" data-section="homes">
+    <div class="section-header">
+      <span class="section-icon">🏠</span>
+      <span class="section-title">Home System</span>
+      <span class="section-count" id="count-homes"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="homes usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>home <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Teleports the player to their home. Without argument, shows the list of available homes.</div>
+        <div class="cmd-aliases">Alias: <em>/homes</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.home</span><span class="perm-node">core.home.nocooldown</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="homes usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>sethome <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Sets a home at the current position. Maximum number of homes based on the <em>core.homes.N</em> permission (1–20).</div>
+        <div class="cmd-perm"><span class="perm-node">core.sethome</span><span class="perm-node">core.homes.1–20</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="homes usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>delhome <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Deletes a saved home of the player.</div>
+        <div class="cmd-perm"><span class="perm-node">core.delhome</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="homes staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>homescheck <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Allows staff to view and manage any player's homes from a GUI menu.</div>
+        <div class="cmd-perm"><span class="perm-node">core.homescheck</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KITS -->
+  <div class="section" data-section="kits">
+    <div class="section-header">
+      <span class="section-icon">🎒</span>
+      <span class="section-title">Kit System</span>
+      <span class="section-count" id="count-kits"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>kit <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Opens the available kits menu. If a name is specified, claims that kit. Each kit has its own permission and cooldown.</div>
+        <div class="cmd-aliases">Alias: <em>/kits</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.kits</span><span class="perm-node">core.kit.[name]</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>createkit <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Creates a new kit using the administrator's current inventory.</div>
+        <div class="cmd-perm"><span class="perm-node">core.createkit</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>deletekit <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Deletes an existing kit from the system.</div>
+        <div class="cmd-perm"><span class="perm-node">core.deletekit</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ECONOMY -->
+  <div class="section" data-section="economy">
+    <div class="section-header">
+      <span class="section-icon">💰</span>
+      <span class="section-title">Economy</span>
+      <span class="section-count" id="count-economy"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="economy usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>balance <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows the player's balance. With argument, checks another player's balance (requires extra permission).</div>
+        <div class="cmd-aliases">Alias: <em>/bal</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.balance</span><span class="perm-node">core.balance.others</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="economy usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>baltop</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows the ranking of the richest players on the server with a paginated interface.</div>
+        <div class="cmd-aliases">Alias: <em>/balancetop</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.baltop</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="economy usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>pay <span style="color:#94a3b8;font-weight:300">[player] [amount]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Transfers money to another server player.</div>
+        <div class="cmd-perm"><span class="perm-node">core.pay</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="economy staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>eco <span style="color:#94a3b8;font-weight:300">[give|set|take] [player] [amount]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Manages player money. Allows giving, removing or setting balance directly.</div>
+        <div class="cmd-perm"><span class="perm-node">core.eco</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="section" data-section="chat">
+    <div class="section-header">
+      <span class="section-icon">💬</span>
+      <span class="section-title">Chat &amp; Messaging</span>
+      <span class="section-count" id="count-chat"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="chat usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>msg <span style="color:#94a3b8;font-weight:300">[player] [message]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Sends a private message to another player.</div>
+        <div class="cmd-aliases">Alias: <em>/tell</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.msg</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="chat usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>r <span style="color:#94a3b8;font-weight:300">[message]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Replies to the last player who sent you a private message.</div>
+        <div class="cmd-perm"><span class="perm-node">core.msg</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="chat usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>msgtoggle</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Enables or disables receiving private messages.</div>
+        <div class="cmd-aliases">Alias: <em>/tpm</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.msgtoggle</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="chat usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ignore <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Ignores or stops ignoring messages from a specific player.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ignore</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="chat usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>helpop <span style="color:#94a3b8;font-weight:300">[message]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Sends a help request to online staff. Has configurable cooldown.</div>
+        <div class="cmd-perm"><span class="perm-node">core.helpop</span><span class="perm-node">core.helpop.ver (staff)</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="chat usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>report <span style="color:#94a3b8;font-weight:300">[player] [reason]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Sends a report to online staff. Has configurable cooldown.</div>
+        <div class="cmd-perm"><span class="perm-node">core.report</span><span class="perm-node">core.report.ver (staff)</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="chat usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>seereports <span style="color:#94a3b8;font-weight:300">[player] [reason]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Allows you to review all reports for a player.</div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.seereports</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="chat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>broadcast <span style="color:#94a3b8;font-weight:300">[message]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Sends a global message to all server players with special formatting.</div>
+        <div class="cmd-aliases">Alias: <em>/alert</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.broadcast</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="chat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clearchat</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Clears the chat for all server players.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clearchat</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="chat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>mutechat</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Silences or enables the global server chat. Only staff can write while it's muted.</div>
+        <div class="cmd-perm"><span class="perm-node">core.mutechat</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="chat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>delaychat <span style="color:#94a3b8;font-weight:300">[seconds]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Sets the cooldown between chat messages for players.</div>
+        <div class="cmd-perm"><span class="perm-node">core.delaychat</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="chat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>staffchat <span style="color:#94a3b8;font-weight:300">[message]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Private chat channel exclusive to staff members.</div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.chat</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TPA -->
+  <div class="section" data-section="tpa">
+    <div class="section-header">
+      <span class="section-icon">✈️</span>
+      <span class="section-title">TPA System</span>
+      <span class="section-count" id="count-tpa"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>tpa <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Sends a teleport request to another player.</div>
+        <div class="cmd-perm"><span class="perm-node">core.tpa</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>tpahere <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Requests another player to teleport to your position.</div>
+        <div class="cmd-perm"><span class="perm-node">core.tpa</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>tpaccept</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Accepts a pending teleport request.</div>
+        <div class="cmd-perm"><span class="perm-node">core.tpa</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>tpadeny</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Denies a pending teleport request.</div>
+        <div class="cmd-perm"><span class="perm-node">core.tpa</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>tpall</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Teleports all server players to the executor's position.</div>
+        <div class="cmd-perm"><span class="perm-node">core.tpall</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>s <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Teleports a player to your position.</div>
+        <div class="cmd-aliases">Alias: <em>/tphere</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.tphere</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>otp <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Teleports you to an offline player's last known position.</div>
+        <div class="cmd-aliases">Alias: <em>/offlinetp</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.otp</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- AFK -->
+  <div class="section" data-section="afk">
+    <div class="section-header">
+      <span class="section-icon">💤</span>
+      <span class="section-title">AFK</span>
+      <span class="section-count" id="count-afk"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>afk</div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Marks the player as AFK (away from keyboard). Deactivates automatically upon movement.</div>
+        <div class="cmd-perm"><span class="perm-node">core.afk</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>afkzone create <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Creates a new AFK zone with the given name at the current position. Players inside receive benefits for being inactive.</div>
+        <div class="cmd-perm"><span class="perm-node">core.afkzone.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>afkzone delete <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Permanently deletes an existing AFK zone from the server.</div>
+        <div class="cmd-perm"><span class="perm-node">core.afkzone.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>afkzone list</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Lists all AFK zones configured on the server with their names and locations.</div>
+        <div class="cmd-perm"><span class="perm-node">core.afkzone.admin</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CLANS -->
+  <div class="section" data-section="clan">
+    <div class="section-header">
+      <span class="section-icon">🏴</span>
+      <span class="section-title">Clan System</span>
+      <span class="section-count" id="count-clan"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan create <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Creates a new clan with the specified name. The player becomes the leader.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan invite <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Invites a player to join the clan. Only the leader or captains can invite.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan join <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Accepts an invitation and joins the specified clan.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan leave</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Leaves the player's current clan.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan kick <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Kicks a member from the clan. Only the leader or captains can use this command.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan promote <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Promotes a clan member to a higher rank (captain). Only the leader can promote.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan disband</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Permanently dissolves the clan. Only the leader can execute this command. Requires confirmation.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan sethome</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Sets the clan base at the current position. Only the leader or captains can change it.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan home</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Teleports the player to the clan base. Has configurable cooldown.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span><span class="perm-node">core.clan.home.nocooldown</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan deposit <span style="color:#94a3b8;font-weight:300">[amount]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Deposits money into the clan bank. All members can contribute to the clan's finances.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan withdraw <span style="color:#94a3b8;font-weight:300">[amount]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Withdraws money from the clan bank. Only the leader or captains can withdraw funds.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan ally <span style="color:#94a3b8;font-weight:300">[clan]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Sends or accepts an alliance request with another clan. Allies don't deal damage to each other.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan unally <span style="color:#94a3b8;font-weight:300">[clan]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Removes the alliance with another clan.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan rally</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Summons all clan members by sending them an alert to gather at a meeting point.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan stats <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows detailed clan statistics: kills, deaths, bank, level and active members.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan info <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows general information about a clan: members, leader, level and alliances.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan chat <span style="color:#94a3b8;font-weight:300">[message]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Sends a message to the clan's private chat, visible only to members.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan top puntos</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows the ranking of the best clans on the server ordered by score.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan top muertes</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows the ranking of the best clans on the server ordered by deaths.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan top asesinatos</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows the ranking of the best clans on the server ordered by kills.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan top dinero</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows the ranking of the best clans on the server ordered by money.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KEYS / CRATES -->
+  <div class="section" data-section="llaves">
+    <div class="section-header">
+      <span class="section-icon">🔑</span>
+      <span class="section-title">Crate System</span>
+      <span class="section-count" id="count-llaves"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card admin" data-cat="llaves staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>crate create <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Creates a crate to set up all the prizes inside.</div>
+        <div class="cmd-perm"><span class="perm-node">core.crate.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="llaves staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>crate delete <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Deletes a crate.</div>
+        <div class="cmd-perm"><span class="perm-node">core.crate.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="llaves staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>crate setkey <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Sets the item required to open the crate.</div>
+        <div class="cmd-perm"><span class="perm-node">core.crate.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="llaves staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>crate setcolor <span style="color:#94a3b8;font-weight:300">[name] [color]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Sets the crate's color.</div>
+        <div class="cmd-perm"><span class="perm-node">core.crate.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="llaves staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>crate setloot <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Sets the loot for the crate.</div>
+        <div class="cmd-perm"><span class="perm-node">core.crate.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="llaves staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>crate setplace <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Marks the location of the crate.</div>
+        <div class="cmd-perm"><span class="perm-node">core.crate.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="llaves staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>crate removeplace <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Removes the assigned blocks from the crate.</div>
+        <div class="cmd-perm"><span class="perm-node">core.crate.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="llaves staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>crate list</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Shows all available crates.</div>
+        <div class="cmd-perm"><span class="perm-node">core.crate.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="llaves staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>crate setanimation <span style="color:#94a3b8;font-weight:300">[name] [type]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Views rewards by type: Wheel - CSGO - SPIN - DROP - FLICKER.</div>
+        <div class="cmd-perm"><span class="perm-node">core.crate.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="llaves staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>crate key give <span style="color:#94a3b8;font-weight:300">[name] [all]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Gives a key to a player or to all players.</div>
+        <div class="cmd-perm"><span class="perm-node">core.crate.admin</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- COMBAT / KOTH -->
+  <div class="section" data-section="combat">
+    <div class="section-header">
+      <span class="section-icon">⚔️</span>
+      <span class="section-title">Combat &amp; KOTH</span>
+      <span class="section-count" id="count-combat"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="combat usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>bounty <span style="color:#94a3b8;font-weight:300">[player] [amount]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Places a monetary bounty on a player's head. Anyone who kills them will receive the money automatically.</div>
+        <div class="cmd-perm"><span class="perm-node">core.bounty</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="combat usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>bountylist</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows all active bounties on the server sorted by amount.</div>
+        <div class="cmd-perm"><span class="perm-node">core.bounty</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="combat usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>koth list</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows all available KOTH events on the server with their current status (active, inactive, scheduled).</div>
+        <div class="cmd-perm"><span class="perm-node">—</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="combat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>koth create <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Creates a new KOTH event with the given name. The capture zone and loot are configured afterwards.</div>
+        <div class="cmd-perm"><span class="perm-node">core.koth.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="combat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>koth delete <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Permanently deletes an existing KOTH event and all its configuration.</div>
+        <div class="cmd-perm"><span class="perm-node">core.koth.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="combat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>koth setcapzone <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Defines the KOTH capture zone at the admin's current position. Players must stay inside to win.</div>
+        <div class="cmd-perm"><span class="perm-node">core.koth.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="combat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>koth settime <span style="color:#94a3b8;font-weight:300">[name] [seconds]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Sets the total capture time required to win the KOTH event in seconds.</div>
+        <div class="cmd-perm"><span class="perm-node">core.koth.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="combat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>koth setloot <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Opens the KOTH reward editor. Configures items and money the winner will receive.</div>
+        <div class="cmd-perm"><span class="perm-node">core.koth.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="combat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>koth schedule add <span style="color:#94a3b8;font-weight:300">[name] [time]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Schedules an automatic KOTH start at a specific time of day. Allows multiple schedules per event.</div>
+        <div class="cmd-perm"><span class="perm-node">core.koth.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="combat staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>koth schedule <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Shows the scheduled times for a specific KOTH event.</div>
+        <div class="cmd-perm"><span class="perm-node">core.koth.admin</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STAFF TOOLS -->
+  <div class="section" data-section="staff">
+    <div class="section-header">
+      <span class="section-icon">🛡️</span>
+      <span class="section-title">Staff Tools</span>
+      <span class="section-count" id="count-staff"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>staffmode</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Toggles staff mode. Provides special moderation tools and visibility.</div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.mode</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>vanish</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Makes the staff member invisible to regular players. Ideal for covert moderation.</div>
+        <div class="cmd-aliases">Alias: <em>/v</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.vanish</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>freeze <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Freezes a player, preventing them from moving. Useful for investigations or screenshares.</div>
+        <div class="cmd-aliases">Alias: <em>/ss</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.freeze</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="staff vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>invsee <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Opens another player's inventory to inspect it in real time.</div>
+        <div class="cmd-perm"><span class="perm-node">core.invsee</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="staff vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>find <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Shows the exact location (world, coordinates) of an online player.</div>
+        <div class="cmd-perm"><span class="perm-node">core.find</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>gm <span style="color:#94a3b8;font-weight:300">[0|1|2|3] [player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Changes gamemode. Shortcuts: /gms (survival), /gmc (creative), /gma (adventure), /gmspec (spectator).</div>
+        <div class="cmd-aliases">Alias: <em>/gms /gmc /gma /gmspec</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.gamemode</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="staff vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>fly <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Toggles flight. Without argument applies to the player themselves; with argument requires extra admin permission.</div>
+        <div class="cmd-perm"><span class="perm-node">core.fly</span><span class="perm-node">core.fly.others</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>slots</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Manages the number of server slots or shows current capacity information.</div>
+        <div class="cmd-perm"><span class="perm-node">core.slots</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>reload</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Reloads the SurvivalSDFCore plugin configuration without restarting the server.</div>
+        <div class="cmd-perm"><span class="perm-node">core.reload</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>spawner <span style="color:#94a3b8;font-weight:300">[type]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Gives a spawner of the specified mob type to the player. For economy and shop management.</div>
+        <div class="cmd-perm"><span class="perm-node">core.spawner.give</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>enchant <span style="color:#94a3b8;font-weight:300">[enchantment] [level]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Enchants the held item to the specified level.</div>
+        <div class="cmd-perm"><span class="perm-node">core.enchant</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- GENERAL UTILITY -->
+  <div class="section" data-section="utility">
+    <div class="section-header">
+      <span class="section-icon">🔧</span>
+      <span class="section-title">General Utility</span>
+      <span class="section-count" id="count-utility"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>spawn</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Teleports the player to the main spawn. Has cooldown. Admins can send other players.</div>
+        <div class="cmd-perm"><span class="perm-node">core.spawn</span><span class="perm-node">core.spawn.nocooldown</span><span class="perm-node">core.spawn.others</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>setspawn</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Sets the server spawn point at the administrator's current position.</div>
+        <div class="cmd-perm"><span class="perm-node">core.setspawn</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>back</div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Returns to the last location before the player's teleport or death.</div>
+        <div class="cmd-perm"><span class="perm-node">core.back</span><span class="perm-node">core.back.nocooldown</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ping <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows own or another player's ping (latency). Viewing others' ping requires extra permission.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ping</span><span class="perm-node">core.ping.others</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>near</div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Shows nearby players to the executor with their approximate distances.</div>
+        <div class="cmd-perm"><span class="perm-node">core.near</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>craft</div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Opens a portable crafting table from anywhere without needing a block.</div>
+        <div class="cmd-perm"><span class="perm-node">core.craft</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>anvil</div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Opens a portable anvil from anywhere.</div>
+        <div class="cmd-perm"><span class="perm-node">core.anvil</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>enderchest</div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Opens a portable ender chest from anywhere without needing a block.</div>
+        <div class="cmd-aliases">Alias: <em>/ec</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.enderchest</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>repair <span style="color:#94a3b8;font-weight:300">[all]</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Repairs the held item. With <em>all</em>, repairs the entire inventory (extra permission). Has cooldown.</div>
+        <div class="cmd-aliases">Alias: <em>/fix</em> &nbsp;·&nbsp; <em>/fix all</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.repair</span><span class="perm-node">core.repair.all</span><span class="perm-node">core.repair.nocooldown</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>condense</div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Compacts inventory materials into their block form (e.g.: 9 ingots → 1 iron block).</div>
+        <div class="cmd-perm"><span class="perm-node">core.condense</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>hat</div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Places the held item as a cosmetic helmet on the head.</div>
+        <div class="cmd-perm"><span class="perm-node">core.hat</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>skull <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Gives a player head with the specified skin or the executor's skin.</div>
+        <div class="cmd-perm"><span class="perm-node">core.skull</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>rename <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Renames the held item with color and format support.</div>
+        <div class="cmd-perm"><span class="perm-node">core.rename</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ci</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc">Clears the complete inventory of the player executing the command.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ci</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>feed <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc">Restores hunger to maximum. Has configurable cooldown.</div>
+        <div class="cmd-perm"><span class="perm-node">core.feed</span><span class="perm-node">core.feed.nocooldown</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>scoreboard</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Enables or disables the side scoreboard for the player.</div>
+        <div class="cmd-perm"><span class="perm-node">core.scoreboard.toggle</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>list</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows the list of online players organized by rank (staff, VIP, players).</div>
+        <div class="cmd-perm"><span class="perm-node">core.vip (VIP tag)</span><span class="perm-node">core.staff.ver-vanish</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>stats <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows player statistics.</div>
+        <div class="cmd-perm"><span class="perm-node">core.stats</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>leaderboards muertes</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows the death statistics of players.</div>
+        <div class="cmd-perm"><span class="perm-node">core.leaderboards</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>leaderboards asesinatos</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows the kill statistics of players.</div>
+        <div class="cmd-perm"><span class="perm-node">core.leaderboards</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>leaderboards playtime</div>
+          <div class="badge usuario">Player</div>
+        </div>
+        <div class="cmd-desc">Shows the playtime statistics of players.</div>
+        <div class="cmd-perm"><span class="perm-node">core.leaderboards</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Player Permission</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div> VIP Exclusive</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Staff Permission</div>
+    <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(90deg,var(--red),var(--green))"></div> Mixed (player base, staff extras)</div>
+    <div class="legend-item" style="margin-left:16px; font-size:11px; opacity:.6">SurvivalSDFCore Plugin · All permissions prefixed with <em>core.*</em></div>
+  </div>
+
+</div>
+
+<script>
+  // Count cards
+  const allCards = document.querySelectorAll('.cmd-card');
+  document.getElementById('total-count').textContent = allCards.length;
+  document.getElementById('admin-count').textContent = document.querySelectorAll('.cmd-card.admin').length;
+  document.getElementById('vip-count').textContent = document.querySelectorAll('.cmd-card.vip').length;
+  document.getElementById('user-count').textContent = document.querySelectorAll('.cmd-card.usuario').length;
+
+  // Count per section
+  function updateSectionCounts() {
+    document.querySelectorAll('.section').forEach(sec => {
+      const visible = sec.querySelectorAll('.cmd-card:not(.hidden)').length;
+      const id = 'count-' + sec.dataset.section;
+      const el = document.getElementById(id);
+      if (el) el.textContent = visible + ' commands';
+      sec.classList.toggle('all-hidden', visible === 0);
+    });
+  }
+
+  // Filter buttons
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    });
+  });
+
+  function applyFilters() {
+    const activeCat = document.querySelector('.filter-btn.active').dataset.cat;
+    const search = document.getElementById('searchBox').value.toLowerCase().trim();
+
+    allCards.forEach(card => {
+      const cats = card.dataset.cat || '';
+      const text = card.textContent.toLowerCase();
+      const catMatch = activeCat === 'all' || cats.includes(activeCat);
+      const searchMatch = !search || text.includes(search);
+      card.classList.toggle('hidden', !(catMatch && searchMatch));
+    });
+
+    updateSectionCounts();
+  }
+
+  document.getElementById('searchBox').addEventListener('input', applyFilters);
+
+  updateSectionCounts();
+
+  // Stagger animations for sections
+  document.querySelectorAll('.section').forEach((s, i) => {
+    s.style.animationDelay = (0.1 + i * 0.05) + 's';
+  });
+
+  /* ══════════════════════════════
+     CURSOR
+  ══════════════════════════════ */
+  const cursor = document.createElement('div');
+  cursor.id = 'cursor';
+  document.body.appendChild(cursor);
+  const cursorEl = document.getElementById('cursor');
+  const cursorRingEl = document.getElementById('cursor-ring');
+  let mx = -100, my = -100, rx = -100, ry = -100;
+
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  function animCursor() {
+    cursorEl.style.left = mx + 'px';
+    cursorEl.style.top  = my + 'px';
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    cursorRingEl.style.left = rx + 'px';
+    cursorRingEl.style.top  = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+
+  /* ══════════════════════════════
+     PARTICLES
+  ══════════════════════════════ */
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', () => { resize(); initParticles(); });
+
+  function initParticles() {
+    particles = [];
+    const count = Math.floor((W * H) / 18000);
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.2 + 0.3,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        o: Math.random() * 0.4 + 0.1
+      });
+    }
+  }
+  initParticles();
+
+  function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(240,106,0,${p.o})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+</script>
+</body>
+</html>
