@@ -852,7 +852,7 @@ body {
 .languages-row {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   gap: 40px;
   margin-top: 15px;
 }
@@ -876,8 +876,10 @@ body {
 
 .lang-item {
   display: flex;
+  flex-direction; column;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  min-height: 120px;
   padding: 6px 16px 6px 10px;
   border-radius: 3px;
   background: rgba(255,255,255,0.03);
@@ -891,8 +893,8 @@ body {
 }
 
 .lang-flag {
-  wdth: 34px;
-  height: 24px;
+  wdth: 48px;
+  height: 34px;
   object-fit: cover;
   margin-right: 8px;
   user-select: none;
