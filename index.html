@@ -840,12 +840,12 @@ body {
 .languages-inner {
   background: var(--bg-2);
   border: 1px solid var(--border);
-  padding: 20px 32px;
+  padding: 28px 32px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 32px;
-  flex-wrap: wrap;
+  gap: 20px;
   position: relative;
   overflow: hidden;
 }
@@ -853,9 +853,10 @@ body {
 .languages-row {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  margin-top: 6px;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  max-width: 600px;
 }
 
 .languages-inner::before {
@@ -872,46 +873,50 @@ body {
   letter-spacing: 3px;
   text-transform: uppercase;
   color: rgba(255,255,255,0.2);
-  margin-right: 8px;
 }
 
 .lang-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  min-height: 120px;
-  padding: 6px 16px 6px 10px;
-  border-radius: 3px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border);
-  pointer-events: none;
+  justify-content: center;
+  gap: 10px;
+  flex: 1;
+  padding: 20px 16px;
+  border-right: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  transition: background 0.2s;
 }
+.lang-item:last-child { border-right: none; }
+.lang-item:hover { background: rgba(240,106,0,0.04); }
 
 .lang-flag {
-  wdth: 48px;
-  height: 34px;
+  width: 56px;
+  height: 38px;
   object-fit: cover;
-  margin-right: 8px;
   user-select: none;
   pointer-events: none;
   border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
 }
 
 .lang-name {
   font-family: 'DM Sans', sans-serif;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-bright);
 }
 
 .lang-code {
   font-family: 'Space Mono', monospace;
-  font-size: 16px;
-  letter-spacing: 2px;
+  font-size: 10px;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  color: rgba(240,106,0,0.5);
-  margin-left: 2px;
+  color: rgba(240,106,0,0.6);
+  background: rgba(240,106,0,0.08);
+  padding: 2px 8px;
+  border-radius: 2px;
+  border: 1px solid rgba(240,106,0,0.15);
 }
 
 /* ══════════════════════════════════
@@ -1031,60 +1036,128 @@ body {
 /* ══════════════════════════════════
    STAT COMMANDS — FULL ROW HIGHLIGHT
 ══════════════════════════════════ */
+@keyframes cmdPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(240,106,0,0); border-color: rgba(240,106,0,0.35); }
+  50%       { box-shadow: 0 0 28px 4px rgba(240,106,0,0.18); border-color: rgba(240,106,0,0.7); }
+}
+@keyframes cmdArrowBounce {
+  0%, 100% { transform: translateX(0); }
+  50%       { transform: translateX(5px); }
+}
+@keyframes cmdGlowLine {
+  0%   { left: -100%; }
+  100% { left: 200%; }
+}
+
 #stat-commands-wrapper {
   grid-column: 1 / -1;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  border-right: none;
+  border: 1px solid rgba(240,106,0,0.35);
   border-left: none;
+  border-right: none;
   position: relative;
   overflow: hidden;
   cursor: pointer !important;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 16px 12px;
-  transition: background 0.25s;
-  background: rgba(240,106,0,0.03);
-  gap: 4px;
+  padding: 18px 24px;
+  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  background: rgba(240,106,0,0.04);
+  gap: 20px;
   text-decoration: none;
+  animation: cmdPulse 3s ease-in-out infinite;
+}
+#stat-commands-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(240,106,0,0.06), transparent);
+  animation: cmdGlowLine 3s ease-in-out infinite;
+  pointer-events: none;
 }
 #stat-commands-wrapper:hover {
-  background: rgba(240,106,0,0.10);
+  background: rgba(240,106,0,0.12);
+  box-shadow: 0 0 40px rgba(240,106,0,0.2);
+  border-color: var(--orange);
+  animation: none;
 }
 #stat-commands-wrapper:hover .stat-num {
   color: var(--orange-glow);
-  text-shadow: 0 0 24px rgba(240,106,0,0.7);
+  text-shadow: 0 0 28px rgba(240,106,0,0.9);
+}
+#stat-commands-wrapper:hover .cmd-arrow-icon {
+  animation: cmdArrowBounce 0.6s ease-in-out infinite;
+}
+#stat-commands-wrapper .cmd-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
 #stat-commands-wrapper .cmd-cta {
   font-family: 'Space Mono', monospace;
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--orange);
-  opacity: 0.6;
-  transition: opacity 0.2s;
+  opacity: 0.85;
+  transition: opacity 0.2s, letter-spacing 0.2s;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 #stat-commands-wrapper:hover .cmd-cta {
   opacity: 1;
+  letter-spacing: 4px;
 }
 #stat-commands-wrapper .stat-num {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 38px;
+  font-size: 52px;
   color: var(--orange);
   line-height: 1;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  transition: text-shadow 0.25s, color 0.25s;
+  text-shadow: 0 0 20px rgba(240,106,0,0.4);
 }
 #stat-commands-wrapper .stat-label {
   font-family: 'Space Mono', monospace;
   font-size: 9px;
   letter-spacing: 3px;
   text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+}
+#stat-commands-wrapper .cmd-divider {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(180deg, transparent, rgba(240,106,0,0.4), transparent);
+  flex-shrink: 0;
+}
+#stat-commands-wrapper .cmd-right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+#stat-commands-wrapper .cmd-right-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 3px;
+  color: var(--text-bright);
+}
+#stat-commands-wrapper .cmd-right-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 2px;
   color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+}
+.cmd-arrow-icon {
+  display: inline-flex;
+  color: var(--orange);
+  vertical-align: middle;
 }
 </style>
 </head>
@@ -1215,11 +1288,20 @@ body {
         <div class="stat-label">Modular</div>
       </div>
       <a id="stat-commands-wrapper" href="commands.html">
-        <div class="stat-num" data-target="150" data-suffix="+">0</div>
-        <div class="stat-label">Commands</div>
-        <div class="cmd-cta">
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 8 L8 2 M4 2 H8 V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Haz clic aquí para ver todos los comandos
+        <div class="cmd-left">
+          <div class="stat-num" data-target="150" data-suffix="+">0</div>
+          <div class="stat-label">Commands</div>
+        </div>
+        <div class="cmd-divider"></div>
+        <div class="cmd-right">
+          <div class="cmd-right-title">Ver todos los comandos</div>
+          <div class="cmd-right-sub">Referencia completa · Todos los sistemas</div>
+          <div class="cmd-cta">
+            <span class="cmd-arrow-icon">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6H10M10 6L7 3M10 6L7 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            Explorar ahora
+          </div>
         </div>
       </a>
     </div>
@@ -1234,30 +1316,25 @@ body {
 
   <div class="languages-section reveal reveal-delay-1">
     <div class="languages-inner">
-	
       <span class="lang-label">Supports multiple languages</span>
-	  
-	  <div class="languages-row">
-      <div class="lang-item">
-        <img class="lang-flag" src="images/en.png" alt="English">
-        <span class="lang-name">English</span>
-        <span class="lang-code">EN</span>
-      </div>
-	  
-      <div class="lang-item">
-        <img class="lang-flag" src="images/es.png" alt="Español">
-        <span class="lang-name">Español</span>
-        <span class="lang-code">ES</span>
-      </div>
-	  
-      <div class="lang-item">
-        <img class="lang-flag" src="images/fr.png" alt="Français">
-        <span class="lang-name">Français</span>
-        <span class="lang-code">FR</span>
+      <div class="languages-row">
+        <div class="lang-item">
+          <img class="lang-flag" src="images/en.png" alt="English">
+          <span class="lang-name">English</span>
+          <span class="lang-code">EN</span>
+        </div>
+        <div class="lang-item">
+          <img class="lang-flag" src="images/es.png" alt="Español">
+          <span class="lang-name">Español</span>
+          <span class="lang-code">ES</span>
+        </div>
+        <div class="lang-item">
+          <img class="lang-flag" src="images/fr.png" alt="Français">
+          <span class="lang-name">Français</span>
+          <span class="lang-code">FR</span>
+        </div>
       </div>
     </div>
-	
-	</div>
   </div>
 
   <!-- SYSTEMS -->
