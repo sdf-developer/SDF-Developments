@@ -442,8 +442,31 @@
     position: relative;
     transition: background 0.2s, border-color 0.2s, color 0.2s;
   }
+  .perm-node::before {
+    content: 'click to copy';
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(17,17,19,0.95);
+    border: 1px solid var(--border-o);
+    color: rgba(240,106,0,0.7);
+    font-family: 'Space Mono', monospace;
+    font-size: 7px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 10;
+  }
+  .perm-node:hover::before { opacity: 1; }
   .perm-node:hover { background: rgba(255,119,0,0.14); border-color: rgba(255,119,0,0.4); color: rgba(255,119,0,0.9); }
   .perm-node.copied { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.5); color: #10b981; }
+  .perm-node.copied::before { content: '✓ copied'; background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.4); color: #10b981; opacity: 1; }
   .copy-toast {
     position: fixed;
     bottom: 88px;
@@ -636,13 +659,6 @@
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
 
-<!-- Breadcrumb -->
-<div id="breadcrumb">
-  <span class="bc-root">Commands</span>
-  <span class="bc-sep">›</span>
-  <span id="bc-section">—</span>
-</div>
-
 <!-- Back to top -->
 <div id="back-to-top" title="Back to top">
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -696,15 +712,6 @@
 <canvas id="particle-canvas"></canvas>
 
 <div class="wrapper">
-
-  <div style="text-align:center; margin-bottom: 8px;">
-    <a class="back-btn" href="https://sdf-developer.github.io/SDF-Survival-Core-Documentation/">
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-        <path d="M8 6H4M4 6L6.5 3.5M4 6L6.5 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Back to Main Page
-    </a>
-  </div>
 
   <header>
     <div class="logo-tag">// Plugin Documentation</div>
@@ -1976,37 +1983,6 @@
     });
   }, { threshold: 0.3 });
   sections.forEach(s => sectionObserver.observe(s));
-
-  /* ══════════════════════════════
-     BREADCRUMB ON SCROLL
-  ══════════════════════════════ */
-  const breadcrumb = document.getElementById('breadcrumb');
-  const bcSection  = document.getElementById('bc-section');
-  const sectionNames = {
-    homes: '🏠 Home System', kits: '🎒 Kit System', economy: '💰 Economy',
-    chat: '💬 Chat & Messaging', tpa: '✈️ TPA System', afk: '💤 AFK',
-    clan: '🏴 Clan System', llaves: '🔑 Crate System', combat: '⚔️ Combat & KOTH',
-    staff: '🛡️ Staff Tools', utility: '🔧 General Utility'
-  };
-
-  const bcObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.dataset.section;
-        if (sectionNames[id]) {
-          bcSection.textContent = sectionNames[id];
-          breadcrumb.classList.add('visible');
-        }
-      }
-    });
-  }, { threshold: 0.2, rootMargin: '-80px 0px 0px 0px' });
-
-  sections.forEach(s => bcObserver.observe(s));
-
-  // Hide breadcrumb at top
-  window.addEventListener('scroll', () => {
-    if (window.scrollY < 200) breadcrumb.classList.remove('visible');
-  });
 
   /* ══════════════════════════════
      BACK TO TOP
