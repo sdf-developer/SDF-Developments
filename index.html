@@ -72,6 +72,7 @@ body {
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
+  scrollbar-gutter: stable;
 }
 
 .page {
@@ -2449,7 +2450,6 @@ function openModal(key) {
 
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
-  document.body.style.paddingRight = (window.innerWidth - document.documentElement.clientWidth) + 'px';
 }
 
 function closeModal() {
@@ -2458,7 +2458,6 @@ function closeModal() {
   overlay.style.pointerEvents = 'none';
   setTimeout(() => {
     document.body.style.overflow = '';
-    document.body.style.paddingRight = '';
     overlay.style.pointerEvents = '';
   }, 350);
 }
