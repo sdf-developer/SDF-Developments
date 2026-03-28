@@ -104,6 +104,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
   <a class="nav-item" href="index.html#installation"><div class="nav-active-bar"></div><div class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><span class="nav-label" id="nav-installation">Installation</span></a>
   <a class="nav-item" href="integrations.html"><div class="nav-active-bar"></div><div class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="19" cy="19" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M12 7v4M12 11l-5 6M12 11l5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="nav-label" id="nav-integrations">Integrations</span></a>
   <a class="nav-item active" href="contact.html"><div class="nav-active-bar"></div><div class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="nav-label" id="nav-contact">Contact</span></a>
+  <a class="nav-item" href="terms.html"><div class="nav-active-bar"></div><div class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="9" y1="13" x2="15" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="17" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><span class="nav-label" id="nav-terms">Terms</span></a>
 </nav>
 <canvas id="particle-canvas"></canvas>
 <div class="page">
@@ -125,11 +126,11 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
 
   <div class="contact-section reveal reveal-delay-1">
     <div class="contact-grid">
-      <a class="contact-card email" href="mailto:sdfsurvivalcore@gmail.com">
+      <a class="contact-card email" href="/cdn-cgi/l/email-protection#b5c6d1d3c6c0c7c3dcc3d4d9d6dac7d0f5d2d8d4dcd99bd6dad8">
         <div class="card-icon-wrap"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect x="3" y="7" width="26" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 10 L16 18 L29 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="card-type" data-i18n="email_type">Email</div>
         <div class="card-title" data-i18n="email_title">Email</div>
-        <div class="card-value">sdfsurvivalcore@gmail.com</div>
+        <div class="card-value"><span class="__cf_email__" data-cfemail="43302725303631352a35222f202c312603242e222a2f6d202c2e">[email&#160;protected]</span></div>
         <div class="card-desc" data-i18n="email_desc">For support inquiries, bug reports, or feature requests. We respond within 24–48h.</div>
       </a>
       <a class="contact-card discord" href="https://discord.gg/xYJ7taj79v" target="_blank" rel="noopener">
@@ -158,7 +159,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
   </footer>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
 let mx=-100,my=-100,rx=-100,ry=-100;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
@@ -168,9 +169,4 @@ let W,H,particles=[];
 function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
 resize();window.addEventListener('resize',resize);
 for(let i=0;i<60;i++)particles.push({x:Math.random()*2000,y:Math.random()*1200,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,r:Math.random()*1.2+.3,a:Math.random()*.5+.1});
-(function p(){ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(240,106,0,${p.a})`;ctx.fill()});requestAnimationFrame(p)})();
-const obs=new IntersectionObserver(e=>e.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.1});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-</script>
-</body>
-</html>
+(function p(){ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(240,106,0,${p.a})`;ctx.fi
