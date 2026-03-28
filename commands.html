@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SDF Survival Core — Commands</title>
-<link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <script src="sdf-core.js" defer></script>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f06a00'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial Black,sans-serif' font-weight='900' font-size='20' fill='white'%3ES%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=JetBrains+Mono:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -710,6 +711,7 @@
     </div>
     <span class="nav-label" id="nav-installation">Installation</span>
   </a>
+  <a class="nav-item" href="integrations.html"><div class="nav-active-bar"></div><div class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="19" cy="19" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M12 7v4M12 11l-5 6M12 11l5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="nav-label" id="nav-integrations">Integrations</span></a>
   <a class="nav-item" href="contact.html">
     <div class="nav-active-bar"></div>
     <div class="nav-icon">
@@ -725,34 +727,34 @@
 <div class="wrapper">
 
   <header>
-    <div class="logo-tag">// Plugin Documentation</div>
+    <div class="logo-tag" data-i18n="eyebrow_commands">// Plugin Documentation</div>
     <h1><span class="accent">Commands</span></h1>
-    <p class="subtitle">Complete reference — 150+ commands and permissions</p>
+    <p class="subtitle" data-i18n="subtitle_commands">Complete reference — 150+ commands and permissions</p>
 
     <div class="stats-bar">
-      <div class="stat"><span class="stat-num" id="total-count">0</span> Total Commands</div>
-      <div class="stat"><span class="stat-num" style="color:var(--red)" id="admin-count">0</span> Staff</div>
-      <div class="stat"><span class="stat-num" style="color:var(--gold)" id="vip-count">0</span> VIP</div>
-      <div class="stat"><span class="stat-num" style="color:var(--green)" id="user-count">0</span> Players</div>
+      <div class="stat"><span class="stat-num" id="total-count">0</span> <span data-i18n="stat_total">Total Commands</span></div>
+      <div class="stat"><span class="stat-num" style="color:var(--red)" id="admin-count">0</span> <span data-i18n="stat_staff">Staff</span></div>
+      <div class="stat"><span class="stat-num" style="color:var(--gold)" id="vip-count">0</span> <span data-i18n="stat_vip">VIP</span></div>
+      <div class="stat"><span class="stat-num" style="color:var(--green)" id="user-count">0</span> <span data-i18n="stat_players">Players</span></div>
     </div>
   </header>
 
   <div class="search-wrap">
-    <input class="search-box" id="searchBox" type="text" placeholder="Search command or permission..." autocomplete="off">
+    <input class="search-box" id="searchBox" type="text" placeholder="Search command or permission..." data-i18n-ph="search_ph" autocomplete="off">
   </div>
 
   <div class="filter-bar">
-    <button class="filter-btn active" data-cat="all">All</button>
-    <button class="filter-btn" data-cat="usuario">👤 Player</button>
-    <button class="filter-btn" data-cat="vip">⭐ VIP</button>
-    <button class="filter-btn" data-cat="staff">🛡 Staff</button>
-    <button class="filter-btn" data-cat="homes">🏠 Homes</button>
-    <button class="filter-btn" data-cat="economy">💰 Economy</button>
-    <button class="filter-btn" data-cat="combat">⚔ Combat</button>
-    <button class="filter-btn" data-cat="chat">💬 Chat</button>
-    <button class="filter-btn" data-cat="llaves">🔑 Keys</button>
-    <button class="filter-btn" data-cat="utility">🔧 Utility</button>
-    <button class="filter-btn" data-cat="clan">🏴 Clans</button>
+    <button class="filter-btn active" data-cat="all" data-i18n="filter_all">All</button>
+    <button class="filter-btn" data-cat="usuario" data-i18n="filter_player">👤 Player</button>
+    <button class="filter-btn" data-cat="vip" data-i18n="filter_vip">⭐ VIP</button>
+    <button class="filter-btn" data-cat="staff" data-i18n="filter_staff">🛡 Staff</button>
+    <button class="filter-btn" data-cat="homes" data-i18n="filter_homes">🏠 Homes</button>
+    <button class="filter-btn" data-cat="economy" data-i18n="filter_economy">💰 Economy</button>
+    <button class="filter-btn" data-cat="combat" data-i18n="filter_combat">⚔ Combat</button>
+    <button class="filter-btn" data-cat="chat" data-i18n="filter_chat">💬 Chat</button>
+    <button class="filter-btn" data-cat="llaves" data-i18n="filter_keys">🔑 Keys</button>
+    <button class="filter-btn" data-cat="utility" data-i18n="filter_utility">🔧 Utility</button>
+    <button class="filter-btn" data-cat="clan" data-i18n="filter_clan">🏴 Clans</button>
   </div>
 
   <!-- HOMES -->
@@ -1866,18 +1868,18 @@
 
   <!-- LEGEND -->
   <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Player Permission</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div> VIP Exclusive</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Staff Permission</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> <span data-i18n="legend_player">Player Permission</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div> <span data-i18n="legend_vip">VIP Exclusive</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> <span data-i18n="legend_staff">Staff Permission</span></div>
   </div>
 
   <!-- FOOTER -->
   <footer class="site-footer">
-    <div class="site-footer-text">© 2025</div>
+    <div class="site-footer-text">© 2026</div>
     <div class="site-footer-dot"></div>
     <div class="site-footer-brand">SDF Development</div>
     <div class="site-footer-dot"></div>
-    <div class="site-footer-text">All rights reserved</div>
+    <div class="site-footer-text" data-i18n="footer_rights">All rights reserved</div>
   </footer>
 
 </div>
