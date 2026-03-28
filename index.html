@@ -799,13 +799,18 @@ body {
   border: 1px solid var(--border);
 }
 
-/* Main image viewport */
+/* Main image viewport — height adapts to content */
 .slider-viewport {
   position: relative;
   width: 100%;
-  height: 280px;
+  min-height: 120px;
+  max-height: 340px;
   overflow: hidden;
   cursor: zoom-in !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
 }
 
 /* Slides with fade transition */
@@ -815,6 +820,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 16px 52px; /* room for arrows + breathing space */
   opacity: 0;
   transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.45s cubic-bezier(0.16,1,0.3,1);
   transform: translateX(30px);
@@ -831,12 +837,15 @@ body {
 }
 
 .slider-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
   display: block;
+  max-width: 100%;
+  max-height: 308px; /* max-height minus padding */
+  width: auto;
+  height: auto;
+  object-fit: contain;
   user-select: none;
   pointer-events: none;
+  image-rendering: pixelated; /* keeps MC pixel art crisp */
 }
 
 /* Prev / Next arrow buttons */
@@ -2242,18 +2251,68 @@ const systemImages = {
 // ── SLIDER STATE ──
 let sliderIndex = 0;
 let sliderImages = [];
+let sliderDims = [];
+
+function adaptViewport(i) {
+  const viewport = document.getElementById('slider-viewport');
+  const d = sliderDims[i];
+  if (!d || !d.w || !d.h) return;
+
+  const usableW = viewport.offsetWidth - 104; // minus arrow space + padding
+  const maxH = 320;
+
+  // For tiny images (chat messages, scoreboards etc), scale up to be readable
+  let scale;
+  if (d.w < 250 && d.h < 80) {
+    scale = Math.min(4, usableW / d.w, maxH / d.h);       // ultra-tiny: up to 4x
+  } else if (d.w < 450 && d.h < 180) {
+    scale = Math.min(2.5, usableW / d.w, maxH / d.h);     // small: up to 2.5x
+  } else {
+    scale = Math.min(1, usableW / d.w, maxH / d.h);       // normal: never upscale
+  }
+
+  const displayH = Math.round(d.h * scale);
+  const clampedH = Math.max(80, Math.min(maxH, displayH + 32));
+  viewport.style.height = clampedH + 'px';
+
+  // Apply crisp rendering for pixel art (small MC screenshots)
+  const img = viewport.querySelector(`.slider-slide[data-i="${i}"] img`);
+  if (img) {
+    img.style.imageRendering = (d.w < 600) ? 'pixelated' : 'auto';
+    // Explicit size so it renders at the scaled dimensions
+    img.style.width = Math.round(d.w * scale) + 'px';
+    img.style.height = Math.round(d.h * scale) + 'px';
+    img.style.maxWidth = 'none';
+    img.style.maxHeight = 'none';
+  }
+}
 
 function buildSlider(images) {
   sliderIndex = 0;
   sliderImages = images;
+  sliderDims = new Array(images.length).fill(null);
+
+  // Reset viewport height
+  document.getElementById('slider-viewport').style.height = '180px';
 
   // Build slides
   const track = document.getElementById('slider-track');
   track.innerHTML = images.map((src, i) =>
     `<div class="slider-slide${i === 0 ? ' active' : ''}" data-i="${i}">
-       <img src="${src}" alt="preview ${i+1}" loading="lazy">
+       <img src="${src}" alt="preview ${i+1}" loading="${i === 0 ? 'eager' : 'lazy'}">
      </div>`
   ).join('');
+
+  // Measure dimensions and adapt viewport for each image
+  track.querySelectorAll('.slider-slide').forEach((slide, i) => {
+    const img = slide.querySelector('img');
+    const measure = () => {
+      sliderDims[i] = { w: img.naturalWidth, h: img.naturalHeight };
+      if (i === 0) adaptViewport(0);
+    };
+    if (img.complete && img.naturalWidth) measure();
+    else img.addEventListener('load', measure);
+  });
 
   // Build thumbs
   const thumbs = document.getElementById('slider-thumbs');
@@ -2266,7 +2325,6 @@ function buildSlider(images) {
     t.addEventListener('click', () => goSlide(+t.dataset.i));
   });
 
-  // show/hide arrows
   const showArrows = images.length > 1;
   document.getElementById('slider-prev').style.display = showArrows ? '' : 'none';
   document.getElementById('slider-next').style.display = showArrows ? '' : 'none';
@@ -2280,7 +2338,6 @@ function goSlide(next) {
   const slides = document.querySelectorAll('.slider-slide');
   const thumbEls = document.querySelectorAll('.slider-thumb');
 
-  // Mark current as exiting left or right
   const direction = next > sliderIndex ? 'exit-left' : 'exit-right';
   slides[sliderIndex].classList.remove('active');
   slides[sliderIndex].classList.add(direction);
@@ -2288,16 +2345,24 @@ function goSlide(next) {
 
   sliderIndex = (next + sliderImages.length) % sliderImages.length;
 
-  // Position new slide coming from the right or left
   const incoming = slides[sliderIndex];
-  incoming.style.transform = next > (sliderIndex - 1 < 0 ? sliderImages.length - 1 : sliderIndex - 1) ? 'translateX(30px)' : 'translateX(-30px)';
   incoming.classList.add('active');
   thumbEls[sliderIndex].classList.add('active');
-
-  // Scroll thumb into view
   thumbEls[sliderIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
 
-  // Clean up exit class after transition
+  // Adapt viewport to the new image
+  if (sliderDims[sliderIndex]) {
+    adaptViewport(sliderIndex);
+  } else {
+    const img = incoming.querySelector('img');
+    const measure = () => {
+      sliderDims[sliderIndex] = { w: img.naturalWidth, h: img.naturalHeight };
+      adaptViewport(sliderIndex);
+    };
+    if (img.complete && img.naturalWidth) measure();
+    else img.addEventListener('load', measure);
+  }
+
   setTimeout(() => {
     document.querySelectorAll('.slider-slide').forEach(s => s.classList.remove('exit-left','exit-right'));
   }, 480);
