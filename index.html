@@ -2454,12 +2454,11 @@ function openModal(key) {
 function closeModal() {
   overlay.classList.remove('open');
   overlay.classList.remove('has-images');
-  // Wait for CSS transition to finish before restoring scroll and pointer-events
-  overlay.addEventListener('transitionend', () => {
+  overlay.style.pointerEvents = 'none'; // immediate — don't wait for CSS transition
+  setTimeout(() => {
     document.body.style.overflow = '';
-  }, { once: true });
-  // Fallback in case transitionend doesn't fire
-  setTimeout(() => { document.body.style.overflow = ''; }, 350);
+    overlay.style.pointerEvents = ''; // restore to CSS-controlled after transition
+  }, 350);
 }
 
 document.querySelectorAll('.sys-card[data-system]').forEach(card => {
