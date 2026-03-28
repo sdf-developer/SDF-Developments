@@ -171,7 +171,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
     <div class="notice-icon">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="16" r="0.5" fill="currentColor" stroke="currentColor" stroke-width="1"/></svg>
     </div>
-    <div class="notice-text"><span data-i18n="required_label">Required Integrations</span> — Apollo &amp; Paper must be installed. The plugin will not load without them.</div>
+    <div class="notice-text" data-i18n="notice_text">Required Integrations — Apollo &amp; Paper must be installed. The plugin will not load without them.</div>
   </div>
 
   <!-- REQUIRED -->
@@ -190,23 +190,23 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
           <div class="int-name-wrap">
             <div class="int-icon">🌙</div>
             <div>
-              <div class="int-name">Apollo</div>
-              <div class="int-version">Lunar Client API</div>
+              <div class="int-name" data-i18n="int_apollo_name">Apollo</div>
+              <div class="int-version" data-i18n="int_apollo_version">Lunar Client API</div>
             </div>
           </div>
-          <div class="int-badge required">Required</div>
+          <div class="int-badge required" data-i18n="badge_required">Required</div>
         </div>
-        <div class="int-desc">The <strong>Lunar Client API</strong> used by SDF Survival Core to deliver enhanced player experiences — custom waypoints, team indicators, rich title overlays and Lunar-native HUD elements.</div>
+        <div class="int-desc" data-i18n-html="int_apollo_desc" data-i18n-html="int_apollo_desc">The <strong>Lunar Client API</strong> used by SDF Survival Core to deliver enhanced player experiences — custom waypoints, team indicators, rich title overlays and Lunar-native HUD elements.</div>
         <div class="int-features">
-          <span class="int-feature">Rich Title API</span>
-          <span class="int-feature">Waypoints</span>
-          <span class="int-feature">Team Display</span>
-          <span class="int-feature">Custom HUD</span>
-          <span class="int-feature">Combat Tags</span>
+          <span class="int-feature" data-i18n="feat_rich_title">Rich Title API</span>
+          <span class="int-feature" data-i18n="feat_waypoints">Waypoints</span>
+          <span class="int-feature" data-i18n="feat_team_display">Team Display</span>
+          <span class="int-feature" data-i18n="feat_custom_hud">Custom HUD</span>
+          <span class="int-feature" data-i18n="feat_combat_tags">Combat Tags</span>
         </div>
         <a class="int-link" href="https://github.com/LunarClient/Apollo" target="_blank" rel="noopener">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6H10M10 6L7 3M10 6L7 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          GitHub → LunarClient/Apollo
+          <span data-i18n="int_apollo_link">GitHub → LunarClient/Apollo</span>
         </a>
       </div>
 
@@ -216,23 +216,23 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
           <div class="int-name-wrap">
             <div class="int-icon">📄</div>
             <div>
-              <div class="int-name">Paper</div>
-              <div class="int-version">1.21+ recommended</div>
+              <div class="int-name" data-i18n="int_paper_name">Paper</div>
+              <div class="int-version" data-i18n="int_paper_version">1.21+ recommended</div>
             </div>
           </div>
-          <div class="int-badge required">Required</div>
+          <div class="int-badge required" data-i18n="badge_required">Required</div>
         </div>
-        <div class="int-desc">SDF Survival Core is built specifically for <strong>Paper</strong>. It relies on Paper's extended API for async chunk loading, event system, performance optimizations and modern packet handling.</div>
+        <div class="int-desc" data-i18n-html="int_paper_desc">SDF Survival Core is built specifically for <strong>Paper</strong>. It relies on Paper's extended API for async chunk loading, event system, performance optimizations and modern packet handling.</div>
         <div class="int-features">
-          <span class="int-feature">Paper API</span>
-          <span class="int-feature">Async Chunks</span>
-          <span class="int-feature">Event System</span>
+          <span class="int-feature" data-i18n="feat_paper_api">Paper API</span>
+          <span class="int-feature" data-i18n="feat_async_chunks">Async Chunks</span>
+          <span class="int-feature" data-i18n="feat_event_system">Event System</span>
           <span class="int-feature">MC 1.21</span>
-          <span class="int-feature">Performance</span>
+          <span class="int-feature" data-i18n="feat_performance">Performance</span>
         </div>
         <a class="int-link" href="https://papermc.io/downloads/paper" target="_blank" rel="noopener">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6H10M10 6L7 3M10 6L7 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          papermc.io/downloads
+          <span data-i18n="int_paper_link">papermc.io/downloads</span>
         </a>
       </div>
 
@@ -255,22 +255,22 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
           <div class="int-name-wrap">
             <div class="int-icon">🔑</div>
             <div>
-              <div class="int-name">LuckPerms</div>
-              <div class="int-version">Permission Manager</div>
+              <div class="int-name" data-i18n="int_luckperms_name">LuckPerms</div>
+              <div class="int-version" data-i18n="int_luckperms_version">Permission Manager</div>
             </div>
           </div>
-          <div class="int-badge optional">Optional</div>
+          <div class="int-badge optional" data-i18n="badge_optional">Optional</div>
         </div>
-        <div class="int-desc">Enables <strong>rank-based permission nodes</strong> for all SDF systems. Without LuckPerms, permission management must be handled by your server's default system.</div>
+        <div class="int-desc" data-i18n-html="int_luckperms_desc">Enables <strong>rank-based permission nodes</strong> for all SDF systems. Without LuckPerms, permission management must be handled by your server's default system.</div>
         <div class="int-features">
-          <span class="int-feature">Rank Nodes</span>
-          <span class="int-feature">Per-Group Config</span>
-          <span class="int-feature">VIP Tiers</span>
-          <span class="int-feature">Staff Roles</span>
+          <span class="int-feature" data-i18n="feat_rank_nodes">Rank Nodes</span>
+          <span class="int-feature" data-i18n="feat_per_group">Per-Group Config</span>
+          <span class="int-feature" data-i18n="feat_vip_tiers">VIP Tiers</span>
+          <span class="int-feature" data-i18n="feat_staff_roles">Staff Roles</span>
         </div>
         <a class="int-link" href="https://luckperms.net" target="_blank" rel="noopener">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6H10M10 6L7 3M10 6L7 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          luckperms.net
+          <span data-i18n="int_luckperms_link">luckperms.net</span>
         </a>
       </div>
 
@@ -280,22 +280,22 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
           <div class="int-name-wrap">
             <div class="int-icon">💰</div>
             <div>
-              <div class="int-name">Vault</div>
-              <div class="int-version">Economy API</div>
+              <div class="int-name" data-i18n="int_vault_name">Vault</div>
+              <div class="int-version" data-i18n="int_vault_version">Economy API</div>
             </div>
           </div>
-          <div class="int-badge optional">Optional</div>
+          <div class="int-badge optional" data-i18n="badge_optional">Optional</div>
         </div>
-        <div class="int-desc">Required only if you want to use <strong>economy features</strong> — balances, shops, bounties and economy commands. Without Vault the economy module will be automatically disabled.</div>
+        <div class="int-desc" data-i18n-html="int_vault_desc">Required only if you want to use <strong>economy features</strong> — balances, shops, bounties and economy commands. Without Vault the economy module will be automatically disabled.</div>
         <div class="int-features">
-          <span class="int-feature">Economy API</span>
-          <span class="int-feature">Balances</span>
-          <span class="int-feature">Bounty System</span>
-          <span class="int-feature">Shop Integration</span>
+          <span class="int-feature" data-i18n="feat_economy_api">Economy API</span>
+          <span class="int-feature" data-i18n="feat_balances">Balances</span>
+          <span class="int-feature" data-i18n="feat_bounty_system">Bounty System</span>
+          <span class="int-feature" data-i18n="feat_shop_int">Shop Integration</span>
         </div>
         <a class="int-link" href="https://www.spigotmc.org/resources/vault.34315/" target="_blank" rel="noopener">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6H10M10 6L7 3M10 6L7 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          SpigotMC → Vault
+          <span data-i18n="int_vault_link">SpigotMC → Vault</span>
         </a>
       </div>
 
@@ -305,22 +305,22 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
           <div class="int-name-wrap">
             <div class="int-icon">📊</div>
             <div>
-              <div class="int-name">PlaceholderAPI</div>
-              <div class="int-version">PAPI Variables</div>
+              <div class="int-name" data-i18n="int_papi_name">PlaceholderAPI</div>
+              <div class="int-version" data-i18n="int_papi_version">PAPI Variables</div>
             </div>
           </div>
-          <div class="int-badge optional">Optional</div>
+          <div class="int-badge optional" data-i18n="badge_optional">Optional</div>
         </div>
-        <div class="int-desc">Exposes all SDF stats as <strong>PAPI placeholders</strong> usable across your server — scoreboards, tab lists, chat formats and any other PAPI-compatible plugin.</div>
+        <div class="int-desc" data-i18n-html="int_papi_desc">Exposes all SDF stats as <strong>PAPI placeholders</strong> usable across your server — scoreboards, tab lists, chat formats and any other PAPI-compatible plugin.</div>
         <div class="int-features">
-          <span class="int-feature">Custom Variables</span>
-          <span class="int-feature">Scoreboard</span>
-          <span class="int-feature">Tab List</span>
-          <span class="int-feature">Chat Format</span>
+          <span class="int-feature" data-i18n="feat_custom_vars">Custom Variables</span>
+          <span class="int-feature" data-i18n="feat_scoreboard">Scoreboard</span>
+          <span class="int-feature" data-i18n="feat_tab_list">Tab List</span>
+          <span class="int-feature" data-i18n="feat_chat_format">Chat Format</span>
         </div>
         <a class="int-link" href="https://www.spigotmc.org/resources/placeholderapi.6245/" target="_blank" rel="noopener">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6H10M10 6L7 3M10 6L7 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          SpigotMC → PAPI
+          <span data-i18n="int_papi_link">SpigotMC → PAPI</span>
         </a>
       </div>
 
@@ -330,22 +330,22 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min
           <div class="int-name-wrap">
             <div class="int-icon">🛡</div>
             <div>
-              <div class="int-name">WorldGuard</div>
-              <div class="int-version">Region Control</div>
+              <div class="int-name" data-i18n="int_wg_name">WorldGuard</div>
+              <div class="int-version" data-i18n="int_wg_version">Region Control</div>
             </div>
           </div>
-          <div class="int-badge optional">Optional</div>
+          <div class="int-badge optional" data-i18n="badge_optional">Optional</div>
         </div>
-        <div class="int-desc">Integrates with SDF to allow <strong>region-based PvP control</strong> — safe zones, spawn protection, no-PvP areas and zone-specific rules for KOTH and combat systems.</div>
+        <div class="int-desc" data-i18n-html="int_wg_desc">Integrates with SDF to allow <strong>region-based PvP control</strong> — safe zones, spawn protection, no-PvP areas and zone-specific rules for KOTH and combat systems.</div>
         <div class="int-features">
-          <span class="int-feature">PvP Regions</span>
-          <span class="int-feature">Safe Zones</span>
-          <span class="int-feature">Spawn Shield</span>
-          <span class="int-feature">KOTH Zones</span>
+          <span class="int-feature" data-i18n="feat_pvp_regions">PvP Regions</span>
+          <span class="int-feature" data-i18n="feat_safe_zones">Safe Zones</span>
+          <span class="int-feature" data-i18n="feat_spawn_shield">Spawn Shield</span>
+          <span class="int-feature" data-i18n="feat_koth_zones">KOTH Zones</span>
         </div>
         <a class="int-link" href="https://dev.bukkit.org/projects/worldguard" target="_blank" rel="noopener">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6H10M10 6L7 3M10 6L7 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          BukkitDev → WorldGuard
+          <span data-i18n="int_wg_link">BukkitDev → WorldGuard</span>
         </a>
       </div>
 
