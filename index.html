@@ -1898,6 +1898,8 @@ body.modal-open {
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', () => {
+
 /* ══════════════════════════════
    CURSOR
 ══════════════════════════════ */
@@ -1921,11 +1923,14 @@ animCursor();
 /* ══════════════════════════════
    SIDEBAR SCROLL - INSTALLATION
 ══════════════════════════════ */
-document.getElementById('nav-install').addEventListener('click', function(e) {
-  e.preventDefault();
-  const el = document.getElementById('installation');
-  if (el) el.scrollIntoView({ behavior: 'smooth' });
-});
+const navInstall = document.getElementById('nav-install');
+if (navInstall) {
+  navInstall.addEventListener('click', function(e) {
+    e.preventDefault();
+    const el = document.getElementById('installation');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  });
+}
 
 /* ══════════════════════════════
    PARTICLES
@@ -2293,6 +2298,8 @@ document.addEventListener('keydown', e => {
     }
   }
 });
+
+}); // end DOMContentLoaded
 </script>
 </body>
 </html>
