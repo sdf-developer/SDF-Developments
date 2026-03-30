@@ -278,8 +278,7 @@ const TRANSLATIONS = {
     eyebrow_terms:   'SDF Survival Core · Legal',
     sub_terms:       'TERMS & CONDITIONS',
     tagline_terms:   'Please read these terms carefully before purchasing or using SDF Survival Core.',
-    legal_label:     'Legal document',
-    /* REVIEWS */
+    legal_label:     'Legal document · March 2026',
     eyebrow_reviews: 'SDF Survival Core · Community',
     sub_reviews:     'COMMUNITY FEEDBACK',
     tagline_reviews: 'Real reviews from server owners and admins who use SDF Survival Core in production.',
@@ -295,6 +294,11 @@ const TRANSLATIONS = {
     terms_s5_body: 'SDF Development is not liable for any server downtime, data loss or other damages resulting from the use or misuse of SDF Survival Core. It is your responsibility to keep backups of your server data.',
     terms_s6_title: '6. Changes to Terms',
     terms_s6_body: 'We reserve the right to update these terms at any time. Continued use of the plugin after changes constitutes acceptance of the new terms. We will announce significant changes via our Discord server.',
+    /* BADGE PLAYER */
+    badge_player: 'Player',
+    badge_staff: 'Staff',
+    badge_vip: '⭐ VIP',
+    copy_toast: '✓ Copied',
     terms_contact_title: 'Questions?',
     terms_contact_sub: 'If you have any questions about these terms, feel free to contact us.',
     terms_contact_cta: 'Contact us',
@@ -630,7 +634,7 @@ const TRANSLATIONS = {
     eyebrow_terms:   'SDF Survival Core · Legal',
     sub_terms:       'TÉRMINOS Y CONDICIONES',
     tagline_terms:   'Lee atentamente estos términos antes de adquirir o utilizar SDF Survival Core.',
-    legal_label:     'Documento legal',
+    legal_label:     'Documento legal · Marzo 2026',
     eyebrow_reviews: 'SDF Survival Core · Comunidad',
     sub_reviews:     'OPINIONES DE LA COMUNIDAD',
     tagline_reviews: 'Opiniones reales de administradores de servidores que usan SDF Survival Core.',
@@ -645,7 +649,6 @@ const TRANSLATIONS = {
     terms_s5_body: 'SDF Development no se hace responsable de caidas del servidor, perdida de datos u otros danos derivados del uso o mal uso de SDF Survival Core. Es tu responsabilidad mantener copias de seguridad de los datos de tu servidor.',
     terms_s6_title: '6. Cambios en los Terminos',
     terms_s6_body: 'Nos reservamos el derecho de actualizar estos terminos en cualquier momento. El uso continuado del plugin tras los cambios implica la aceptacion de los nuevos terminos. Anunciaremos cambios significativos en nuestro servidor de Discord.',
-    terms_contact_cta: 'Contactanos',
     /* BADGE PLAYER */
     badge_player: 'Jugador',
     badge_staff: 'Staff',
@@ -985,8 +988,8 @@ const TRANSLATIONS = {
     nav_reviews: 'Avis',
     eyebrow_terms:   'SDF Survival Core · Légal',
     sub_terms:       'CONDITIONS GÉNÉRALES',
-    tagline_terms:   'Veuillez lire attentivement ces conditions avant d\'acheter ou d\'utiliser SDF Survival Core.',
-    legal_label:     'Document légal',
+    tagline_terms:   "Veuillez lire attentivement ces conditions avant d'acheter ou d'utiliser SDF Survival Core.",
+    legal_label:     'Document légal · Mars 2026',
     eyebrow_reviews: 'SDF Survival Core · Communauté',
     sub_reviews:     'AVIS DE LA COMMUNAUTÉ',
     tagline_reviews: 'Avis réels d\'administrateurs de serveurs qui utilisent SDF Survival Core en production.',
@@ -1224,7 +1227,6 @@ function applyLang(lang) {
     if (metaEl && T.terms_meta_text) {
       metaEl.innerHTML = T.terms_meta_text + ': <span>' + T.terms_meta_date + '</span>';
     }
-    // Header
     const termsSub = document.querySelector('.main-title .sub');
     if (termsSub && T.sub_terms) termsSub.textContent = T.sub_terms;
   }
