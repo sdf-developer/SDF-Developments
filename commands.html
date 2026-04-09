@@ -750,6 +750,7 @@
     <button class="filter-btn" data-cat="llaves" data-i18n="filter_keys">🔑 Keys</button>
     <button class="filter-btn" data-cat="utility" data-i18n="filter_utility">🔧 Utility</button>
     <button class="filter-btn" data-cat="clan" data-i18n="filter_clan">🏴 Clans</button>
+    <button class="filter-btn" data-cat="protecciones" data-i18n="filter_protections">🔒 Protections</button>
   </div>
 
   <!-- HOMES -->
@@ -1008,6 +1009,7 @@
           <div class="badge admin">Staff</div>
         </div>
         <div class="cmd-desc" data-i18n="cmd_staffchat">Private chat channel exclusive to staff members.</div>
+        <div class="cmd-aliases">Alias: <em>/sc</em></div>
         <div class="cmd-perm"><span class="perm-node">core.staff.chat</span></div>
       </div>
 
@@ -1111,7 +1113,7 @@
 
       <div class="cmd-card admin" data-cat="utility staff">
         <div class="cmd-top">
-          <div class="cmd-name"><span>/</span>afkzone create <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="cmd-name"><span>/</span>afkzone create</div>
           <div class="badge admin">Staff</div>
         </div>
         <div class="cmd-desc" data-i18n="cmd_createafk">Creates a new AFK zone with the given name at the current position. Players inside receive benefits for being inactive.</div>
@@ -1120,7 +1122,7 @@
 
       <div class="cmd-card admin" data-cat="utility staff">
         <div class="cmd-top">
-          <div class="cmd-name"><span>/</span>afkzone delete <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="cmd-name"><span>/</span>afkzone delete</div>
           <div class="badge admin">Staff</div>
         </div>
         <div class="cmd-desc" data-i18n="cmd_deleteafk">Permanently deletes an existing AFK zone from the server.</div>
@@ -1129,10 +1131,10 @@
 
       <div class="cmd-card admin" data-cat="utility staff">
         <div class="cmd-top">
-          <div class="cmd-name"><span>/</span>afkzone list</div>
+          <div class="cmd-name"><span>/</span>afkzone rewards</div>
           <div class="badge admin">Staff</div>
         </div>
-        <div class="cmd-desc" data-i18n="cmd_listafk">Lists all AFK zones configured on the server with their names and locations.</div>
+        <div class="cmd-desc" data-i18n="cmd_rewardsafk">Opens the reward editor for the AFK zone. Allows configuring the items and benefits players receive for staying inside.</div>
         <div class="cmd-perm"><span class="perm-node">core.afkzone.admin</span></div>
       </div>
 
@@ -1630,15 +1632,6 @@
 
       <div class="cmd-card admin" data-cat="staff">
         <div class="cmd-top">
-          <div class="cmd-name"><span>/</span>reload</div>
-          <div class="badge admin">Staff</div>
-        </div>
-        <div class="cmd-desc" data-i18n="cmd_reload">Reloads the SurvivalSDFCore plugin configuration without restarting the server.</div>
-        <div class="cmd-perm"><span class="perm-node">core.reload</span></div>
-      </div>
-
-      <div class="cmd-card admin" data-cat="staff">
-        <div class="cmd-top">
           <div class="cmd-name"><span>/</span>spawner <span style="color:#94a3b8;font-weight:300">[type]</span></div>
           <div class="badge admin">Staff</div>
         </div>
@@ -1856,6 +1849,534 @@
         </div>
         <div class="cmd-desc" data-i18n="cmd_playtimestats">Shows the playtime statistics of players.</div>
         <div class="cmd-perm"><span class="perm-node">core.leaderboards</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WARPS -->
+  <div class="section" data-section="warps">
+    <div class="section-header">
+      <span class="section-icon">🌀</span>
+      <span class="section-title" data-i18n="sec_warps">Warp System</span>
+      <span class="section-count" id="count-warps"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>warp <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_warp">Teleports the player to a configured warp. Without argument, opens the warp menu. Has configurable cooldown.</div>
+        <div class="cmd-perm"><span class="perm-node">core.warp</span><span class="perm-node">core.warp.bypass-cooldown</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>warpcreate <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_warpcreate">Creates a warp at the administrator's current position with the given name.</div>
+        <div class="cmd-perm"><span class="perm-node">core.warp.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>warpdelete <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_warpdelete">Permanently deletes an existing warp from the server.</div>
+        <div class="cmd-perm"><span class="perm-node">core.warp.admin</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PROTECTIONS -->
+  <div class="section" data-section="protecciones">
+    <div class="section-header">
+      <span class="section-icon">🔒</span>
+      <span class="section-title" data-i18n="sec_protections">Protection System</span>
+      <span class="section-count" id="count-protecciones"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="protecciones usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ps create <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_pscreate">Creates a new land protection at the player's current position. Prevents other players from building or interacting inside.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ps</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="protecciones usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ps delete <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_psdelete">Permanently removes one of the player's own protections.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ps</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="protecciones usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ps expand <span style="color:#94a3b8;font-weight:300">[name] [size]</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_psexpand">Expands an existing protection by the specified number of blocks in all directions.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ps</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="protecciones usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ps addmember <span style="color:#94a3b8;font-weight:300">[name] [player]</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_psaddmember">Adds a player as a member of the protection, allowing them to build and interact inside it.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ps</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="protecciones usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ps removemember <span style="color:#94a3b8;font-weight:300">[name] [player]</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_psremovemember">Removes a player's access from the protection.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ps</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="protecciones usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ps info <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_psinfo">Shows detailed information about a protection: owner, members, size and location.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ps</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="protecciones usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ps list <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_pslist">Lists all protections belonging to the player. Staff can view another player's protections.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ps</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="protecciones staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ps admin delete <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_psadmindelete">Allows staff to delete any player's protection regardless of ownership.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ps.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="protecciones staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ps admin info <span style="color:#94a3b8;font-weight:300">[name]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_psadmininfo">Allows staff to inspect any protection on the server regardless of ownership.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ps.admin</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SPAWN ZONE -->
+  <div class="section" data-section="spawnzone">
+    <div class="section-header">
+      <span class="section-icon">🏗️</span>
+      <span class="section-title" data-i18n="sec_spawnzone">Spawn Zone</span>
+      <span class="section-count" id="count-spawnzone"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>spawnzone create</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_spawnzonecreate">Creates the protected spawn zone using the current WorldEdit selection. Blocks PvP and griefing inside the area.</div>
+        <div class="cmd-perm"><span class="perm-node">core.spawnzone.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>spawnzone delete</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_spawnzonedelete">Removes the spawn zone protection completely.</div>
+        <div class="cmd-perm"><span class="perm-node">core.spawnzone.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>spawnzone info</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_spawnzoneinfo">Shows information about the current spawn zone: boundaries, size and active status.</div>
+        <div class="cmd-perm"><span class="perm-node">core.spawnzone.admin</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MISC STAFF COMMANDS (playtime, heal, sellwand, rtp, invrestore, setstat, seen/ip/alts/uuid, top, lore, sdf) -->
+  <div class="section" data-section="misc">
+    <div class="section-header">
+      <span class="section-icon">⚙️</span>
+      <span class="section-title" data-i18n="sec_misc">Extra Commands</span>
+      <span class="section-count" id="count-misc"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>playtime <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_playtime">Shows the total playtime of the player. Staff can check other players' playtime by specifying a name.</div>
+        <div class="cmd-perm"><span class="perm-node">core.leaderboards</span></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>heal</div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_heal">Fully restores the player's health and hunger to maximum. Has configurable cooldown.</div>
+        <div class="cmd-perm"><span class="perm-node">core.heal</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>rtp <span style="color:#94a3b8;font-weight:300">[world]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_rtp">Teleports the player to a random safe location. Supports normal world, nether and end. Has configurable cooldown.</div>
+        <div class="cmd-perm"><span class="perm-node">core.rtp</span><span class="perm-node">core.rtp.nether</span><span class="perm-node">core.rtp.end</span><span class="perm-node">core.rtp.bypass-cooldown</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>sellwand give <span style="color:#94a3b8;font-weight:300">[type] [player] [uses] [mult]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_sellwand">Gives a SellWand to a player. Allows configuring type, number of uses and sale multiplier. Used to quickly sell chest contents.</div>
+        <div class="cmd-perm"><span class="perm-node">core.sellwand.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>invrestore <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_invrestore">Opens a GUI to view and restore a player's death inventories. Useful for recovering items after unfair deaths.</div>
+        <div class="cmd-perm"><span class="perm-node">core.invrestore</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>setstat <span style="color:#94a3b8;font-weight:300">[stat] [player] [value]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_setstat">Directly modifies a specific statistic of a player (kills, deaths, etc.).</div>
+        <div class="cmd-perm"><span class="perm-node">core.setstat</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>setclanstat <span style="color:#94a3b8;font-weight:300">[stat] [clan] [value]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_setclanstat">Directly modifies a specific statistic of a clan (points, kills, deaths, etc.).</div>
+        <div class="cmd-perm"><span class="perm-node">core.setclanstat</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>seen <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_seen">Shows detailed information about a player: last login, last logout, IP, play time and current status.</div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.seen</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ip <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_ip">Shows the current or last known IP address of a player. Useful for detecting alts.</div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.seen</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>alts <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_alts">Shows all accounts that have connected from the same IP as the specified player.</div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.seen</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>uuid <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_uuid">Shows the Minecraft UUID of a player. Useful for permission and ban management.</div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.seen</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>top</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_top">Teleports the player to the nearest solid block directly above their current position. Useful for getting out of underground areas.</div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.top</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>lore <span style="color:#94a3b8;font-weight:300">[line] [message]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_lore">Adds or modifies a lore line on the held item. Supports color codes.</div>
+        <div class="cmd-perm"><span class="perm-node">core.staff.lore</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>sdf reload</div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_sdf">Main plugin command. Reloads all SurvivalSDFCore configuration files without restarting the server.</div>
+        <div class="cmd-perm"><span class="perm-node">core.reload</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>ci <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_ciothers">With a player argument, clears another player's inventory. Requires extra permission.</div>
+        <div class="cmd-perm"><span class="perm-node">core.ci</span><span class="perm-node">core.ci.others</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>feed <span style="color:#94a3b8;font-weight:300">[player]</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_feedothers">With a player argument, restores another player's hunger. Requires the extra permission <em>core.feed.others</em>.</div>
+        <div class="cmd-perm"><span class="perm-node">core.feed.others</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PERMISSIONS WITHOUT COMMAND -->
+  <div class="section" data-section="perms-only">
+    <div class="section-header">
+      <span class="section-icon">🔑</span>
+      <span class="section-title" data-i18n="sec_perms_only">Permissions Without Command</span>
+      <span class="section-count" id="count-perms-only"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.chat.color</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_chatcolor">Allows the player to use color codes (&amp;a, &amp;l, &amp;o...) in chat messages. Without this permission, color codes are displayed as plain text.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.afk.auto</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_afkauto">When the player is idle, they are automatically marked as AFK instead of being kicked. Essential for keeping regular players connected.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.homes.1–20</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_homes_n">Defines the maximum number of homes a player can have. Assign <em>core.homes.3</em> to allow 3 homes, <em>core.homes.10</em> for 10, etc. Range: 1 to 20.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.home.nocooldown</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_homenocooldown">Bypasses the cooldown of the /home command. The player can teleport to their homes instantly without waiting.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.back.nocooldown</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_backnocooldown">Bypasses the cooldown of the /back command. The player can use /back repeatedly without waiting between uses.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.spawn.nocooldown</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_spawnnocooldown">Bypasses the cooldown of the /spawn command. Allows teleporting to spawn instantly without waiting.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.spawn.others</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_spawnothers">Allows using /spawn [player] to teleport another player to spawn. Useful for moderators who need to bring players to a safe area.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.repair.all</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_repairall">Allows using /repair all to repair the entire inventory at once, not just the held item.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.repair.nocooldown</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_repairnocooldown">Bypasses the cooldown of the /repair command. Allows repairing items without waiting between uses.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.feed.nocooldown</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_feednocooldown">Bypasses the cooldown of the /feed command. Allows restoring hunger instantly without waiting between uses.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.ping.others</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_pingothers">Allows using /ping [player] to check another player's ping. Without this permission, /ping only shows the own player's latency.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.fly.others</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_flyothers">Allows using /fly [player] to toggle flight for another player. Without this permission, /fly only affects the player themselves.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card vip" data-cat="utility vip">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.balance.others</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_balanceothers">Allows using /balance [player] to check another player's balance. Without this permission, /balance only shows the own player's funds.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.helpop.ver</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_helpopver">Allows staff to receive and see /helpop messages sent by players. Without this permission, help requests are not displayed.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.report.ver</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_reportver">Allows staff to receive and see /report messages sent by players. Without this permission, player reports are not displayed.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.clan.home.nocooldown</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_clanhomenocooldown">Bypasses the cooldown of /clan home. Allows teleporting to the clan base instantly without waiting between uses.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.vip</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_vip">Shows the VIP tag on the /list player list. Does not grant any specific commands; it only acts as a visual and identification tag for VIP players.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.staff.ver-vanish</span></div>
+          <div class="badge admin">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_vervanish">Allows staff to see players who are in vanish mode. Without this permission, vanished players are completely invisible even for other staff.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="protecciones usuario">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.warp.bypass-cooldown</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_warpnocooldown">Bypasses the cooldown of the /warp command. Allows teleporting to any warp instantly without waiting between uses.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.rtp.bypass-cooldown</span></div>
+          <div class="badge vip">⭐ VIP</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_rtpnocooldown">Bypasses the cooldown of the /rtp command. Allows performing random teleportations without waiting between uses.</div>
+        <div class="cmd-perm"></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="utility usuario">
+        <div class="cmd-top">
+          <div class="cmd-name" style="font-size:13px"><span class="perm-node" style="font-size:11px;display:inline-block">core.kit.[name]</span></div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="perm_kit_name">Grants access to a specific kit by name. For example, <em>core.kit.vip</em> unlocks the kit named "vip". Each kit requires its own permission node.</div>
+        <div class="cmd-perm"></div>
       </div>
 
     </div>
