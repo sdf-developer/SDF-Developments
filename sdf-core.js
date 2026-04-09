@@ -495,6 +495,12 @@ const TRANSLATIONS = {
     perm_warpnocooldown:     'Bypasses the cooldown of the /warp command. Allows teleporting to any warp instantly without waiting between uses.',
     perm_rtpnocooldown:      'Bypasses the cooldown of the /rtp command. Allows performing random teleportations without waiting between uses.',
     perm_kit_name:           'Grants access to a specific kit by name. For example, core.kit.vip unlocks the kit named "vip". Each kit requires its own permission node.',
+    /* CMD ARGUMENT TOKENS */
+    arg_player: 'player', arg_name: 'name', arg_amount: 'amount', arg_message: 'message',
+    arg_seconds: 'seconds', arg_reason: 'reason', arg_type: 'type', arg_world: 'world',
+    arg_clan: 'clan', arg_level: 'level', arg_enchantment: 'enchantment', arg_color: 'color',
+    arg_size: 'size', arg_time: 'time', arg_line: 'line', arg_stat: 'stat',
+    arg_value: 'value', arg_uses: 'uses', arg_mult: 'mult', arg_all: 'all',
   },
   es: {
     nav_home:        'Inicio',
@@ -957,6 +963,12 @@ const TRANSLATIONS = {
     perm_warpnocooldown:     'Omite el cooldown del comando /warp. Permite teleportarse a cualquier warp al instante sin esperar entre usos.',
     perm_rtpnocooldown:      'Omite el cooldown del comando /rtp. Permite realizar teleportes aleatorios sin esperar entre usos.',
     perm_kit_name:           'Otorga acceso a un kit concreto por nombre. Por ejemplo, core.kit.vip desbloquea el kit "vip". Cada kit requiere su propio nodo de permiso.',
+    /* TOKENS DE ARGUMENTOS */
+    arg_player: 'jugador', arg_name: 'nombre', arg_amount: 'cantidad', arg_message: 'mensaje',
+    arg_seconds: 'segundos', arg_reason: 'motivo', arg_type: 'tipo', arg_world: 'mundo',
+    arg_clan: 'clan', arg_level: 'nivel', arg_enchantment: 'encantamiento', arg_color: 'color',
+    arg_size: 'tamaño', arg_time: 'hora', arg_line: 'fila', arg_stat: 'stat',
+    arg_value: 'valor', arg_uses: 'usos', arg_mult: 'mult', arg_all: 'todo',
   },
   fr: {
     nav_home:        'Accueil',
@@ -1420,6 +1432,12 @@ const TRANSLATIONS = {
     perm_warpnocooldown:     'Contourne le cooldown de la commande /warp. Permet de se téléporter instantanément vers n\'importe quel warp sans attendre.',
     perm_rtpnocooldown:      'Contourne le cooldown de la commande /rtp. Permet d\'effectuer des téléportations aléatoires sans attendre entre les utilisations.',
     perm_kit_name:           'Accorde l\'accès à un kit spécifique par nom. Par exemple, core.kit.vip déverrouille le kit "vip". Chaque kit nécessite son propre nœud de permission.',
+    /* TOKENS D'ARGUMENTS */
+    arg_player: 'joueur', arg_name: 'nom', arg_amount: 'montant', arg_message: 'message',
+    arg_seconds: 'secondes', arg_reason: 'raison', arg_type: 'type', arg_world: 'monde',
+    arg_clan: 'clan', arg_level: 'niveau', arg_enchantment: 'enchantement', arg_color: 'couleur',
+    arg_size: 'taille', arg_time: 'heure', arg_line: 'ligne', arg_stat: 'stat',
+    arg_value: 'valeur', arg_uses: 'utilisations', arg_mult: 'mult', arg_all: 'tout',
   }
 };
 
@@ -1610,6 +1628,9 @@ function applyLang(lang) {
     const toast = document.getElementById('copy-toast');
     if (toast) toast.textContent = T.copy_toast;
   }
+
+  // Translate command argument tokens [player], [name], etc.
+  translateCmdArgs(T);
 }
 
 function setText(id, val) {
@@ -1626,6 +1647,26 @@ function setAttr(id, attr, val) {
   if (!val) return;
   const el = document.getElementById(id);
   if (el) el.setAttribute(attr, val);
+}
+
+function translateCmdArgs(T) {
+  const tokenMap = {
+    'player': 'arg_player', 'name': 'arg_name', 'amount': 'arg_amount',
+    'message': 'arg_message', 'seconds': 'arg_seconds', 'reason': 'arg_reason',
+    'type': 'arg_type', 'world': 'arg_world', 'clan': 'arg_clan',
+    'level': 'arg_level', 'enchantment': 'arg_enchantment', 'color': 'arg_color',
+    'size': 'arg_size', 'time': 'arg_time', 'line': 'arg_line', 'stat': 'arg_stat',
+    'value': 'arg_value', 'uses': 'arg_uses', 'mult': 'arg_mult', 'all': 'arg_all',
+  };
+  document.querySelectorAll('.cmd-name span[style*="94a3b8"]').forEach(el => {
+    // Store the original EN text the very first time (before any translation)
+    if (!el.dataset.argEn) el.dataset.argEn = el.textContent;
+    // Always translate from the stored EN original
+    el.textContent = el.dataset.argEn.replace(/\[([^\]]+)\]/g, (match, token) => {
+      const key = tokenMap[token.toLowerCase()];
+      return key && T[key] ? '[' + T[key] + ']' : match;
+    });
+  });
 }
 
 function updateLangUI(lang) {
