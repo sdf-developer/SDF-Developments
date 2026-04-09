@@ -1523,6 +1523,11 @@ function applyLang(lang) {
     setText('legend-player', T.legend_player);
     setText('legend-vip',    T.legend_vip);
     setText('legend-staff',  T.legend_staff);
+    // Update section count word and refresh all section counters
+    if (T.cmd_word) {
+      window.__t_commands = T.cmd_word;
+      if (typeof window.__updateSectionCounts === 'function') window.__updateSectionCounts();
+    }
   }
 
   if (page === 'changelog.html') {
@@ -1966,8 +1971,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Apply saved language
   const lang = getLang();
+  const T_init = TRANSLATIONS[lang] || TRANSLATIONS['en'];
+  if (T_init.cmd_word) window.__t_commands = T_init.cmd_word;
   applyLang(lang);
   updateLangUI(lang);
+  // Refresh section counts after lang is applied (commands page)
+  if (typeof window.__updateSectionCounts === 'function') window.__updateSectionCounts();
 
   // Hook lang buttons to also update popup if present
   document.querySelectorAll('.lang-btn').forEach(btn => {
