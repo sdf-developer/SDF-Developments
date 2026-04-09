@@ -442,6 +442,11 @@ const TRANSLATIONS = {
     int_eshop_version: 'Shop System',
     int_eshop_desc:    'Integrates with SDF to provide a fully featured <strong>GUI shop system</strong>. Allows players to buy and sell items using the server economy. Compatible with SellWands and the economy module.',
     int_eshop_link:    'SpigotMC → EconomyShopGUI',
+    /* WORLDEDIT */
+    int_we_name:    'WorldEdit',
+    int_we_version: 'Selection API',
+    int_we_desc:    'Used by SDF to define <strong>zone boundaries</strong> via WorldEdit selections — spawn zones, AFK zones and protected areas. Without WorldEdit, zones must be set manually.',
+    int_we_link:    'BukkitDev → WorldEdit',
     notice_text: 'Required Integrations — Paper &amp; Vault must be installed. The plugin will not load without them.',
     /* SDF DEVELOPMENTS rebranding */
     eyebrow_contact:  'SDF Developments · Support & Contact',
@@ -924,6 +929,11 @@ const TRANSLATIONS = {
     int_eshop_version: 'Sistema de Tienda',
     int_eshop_desc:    'Se integra con SDF para ofrecer un <strong>sistema de tienda GUI</strong> completo. Permite a los jugadores comprar y vender ítems usando la economía del servidor. Compatible con SellWands y el módulo de economía.',
     int_eshop_link:    'SpigotMC → EconomyShopGUI',
+    /* WORLDEDIT */
+    int_we_name:    'WorldEdit',
+    int_we_version: 'API de Selección',
+    int_we_desc:    'Utilizado por SDF para definir <strong>límites de zona</strong> mediante selecciones de WorldEdit — zonas de spawn, zonas AFK y áreas protegidas. Sin WorldEdit, las zonas deben configurarse manualmente.',
+    int_we_link:    'BukkitDev → WorldEdit',
     notice_text: 'Integraciones Obligatorias — Paper y Vault deben estar instalados. El plugin no cargará sin ellos.',
     /* REBRANDING SDF DEVELOPMENTS */
     eyebrow_contact:  'SDF Developments · Soporte & Contacto',
@@ -1407,6 +1417,11 @@ const TRANSLATIONS = {
     int_eshop_version: 'Système de Boutique',
     int_eshop_desc:    'S\'intègre à SDF pour fournir un <strong>système de boutique GUI</strong> complet. Permet aux joueurs d\'acheter et vendre des objets via l\'économie du serveur. Compatible avec les SellWands et le module économie.',
     int_eshop_link:    'SpigotMC → EconomyShopGUI',
+    /* WORLDEDIT */
+    int_we_name:    'WorldEdit',
+    int_we_version: 'API de Sélection',
+    int_we_desc:    'Utilisé par SDF pour définir les <strong>limites de zone</strong> via les sélections WorldEdit — zones de spawn, zones AFK et zones protégées. Sans WorldEdit, les zones doivent être configurées manuellement.',
+    int_we_link:    'BukkitDev → WorldEdit',
     notice_text: 'Intégrations Requises — Paper et Vault doivent être installés. Le plugin ne se chargera pas sans eux.',
     /* REBRANDING SDF DEVELOPMENTS */
     eyebrow_contact:  'SDF Developments · Support & Contact',
