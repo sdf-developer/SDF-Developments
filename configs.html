@@ -1,0 +1,2254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDF Survival Core — Configs</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<script src="sdf-core.js" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --orange:       #f06a00;
+  --orange-glow:  #ff8c2a;
+  --bg:           #111113;
+  --bg-2:         #18181b;
+  --bg-3:         #1f1f23;
+  --border:       rgba(255,255,255,0.07);
+  --border-o:     rgba(240,106,0,0.35);
+  --text:         #b0b0b8;
+  --text-bright:  #e8e8ec;
+  --white:        #ffffff;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-o); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--orange); }
+
+* { cursor: none !important; }
+#cursor {
+  position: fixed; width: 10px; height: 10px;
+  background: var(--orange); border-radius: 50%;
+  pointer-events: none; z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+  mix-blend-mode: screen;
+}
+#cursor-ring {
+  position: fixed; width: 32px; height: 32px;
+  border: 1px solid rgba(240,106,0,0.5); border-radius: 50%;
+  pointer-events: none; z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.12s ease, width 0.2s, height 0.2s, border-color 0.2s;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9998; opacity: 0.5;
+}
+
+body {
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#particle-canvas {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0; opacity: 0.35;
+}
+
+/* ── SIDEBAR NAV ── */
+#sidebar-nav {
+  position: fixed; left: 0; top: 50%;
+  transform: translateY(-50%);
+  z-index: 900;
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 12px 0;
+  background: rgba(17,17,19,0.92);
+  border-right: 1px solid var(--border-o);
+  backdrop-filter: blur(10px);
+  border-radius: 0 6px 6px 0;
+  box-shadow: 2px 0 24px rgba(0,0,0,0.4);
+}
+.nav-item {
+  display: flex; align-items: center; gap: 0;
+  width: 44px; overflow: hidden; white-space: nowrap;
+  transition: width 0.32s cubic-bezier(0.16,1,0.3,1), background 0.2s, border-color 0.2s;
+  cursor: pointer !important; text-decoration: none;
+  border: 1px solid transparent; border-left: none;
+  border-radius: 0 4px 4px 0; position: relative;
+}
+.nav-item:hover { width: 160px; background: rgba(240,106,0,0.08); border-color: var(--border-o); border-left: none; }
+.nav-icon {
+  flex-shrink: 0; width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.25); transition: color 0.2s;
+}
+.nav-item:hover .nav-icon { color: var(--orange); }
+.nav-label {
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text); padding-right: 14px;
+  opacity: 0; transition: opacity 0.22s 0.08s;
+}
+.nav-item:hover .nav-label { opacity: 1; }
+.nav-active-bar {
+  position: absolute; left: 0; top: 8px; bottom: 8px;
+  width: 2px; background: var(--orange);
+  border-radius: 0 2px 2px 0; opacity: 0; transition: opacity 0.2s;
+}
+.nav-item.active .nav-active-bar { opacity: 1; }
+.nav-item.active .nav-icon { color: var(--orange); }
+
+/* ── WRAPPER ── */
+.wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 0 80px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  padding: 64px 48px 0;
+  text-align: center;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.1s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.header-eyebrow {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; margin-bottom: 18px;
+}
+.eyebrow-line { flex: 1; height: 1px; max-width: 60px; }
+.eyebrow-line:first-child { background: linear-gradient(90deg, transparent, var(--border-o)); }
+.eyebrow-line:last-child  { background: linear-gradient(270deg, transparent, var(--border-o)); }
+.eyebrow-text {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 4px; text-transform: uppercase; color: var(--orange);
+}
+
+.page-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(52px, 9vw, 80px);
+  line-height: 0.95; letter-spacing: 3px; color: var(--white);
+  margin-bottom: 14px;
+}
+.page-title .accent { color: var(--orange); }
+
+.page-sub {
+  font-size: 13px; font-weight: 300; color: var(--text);
+  line-height: 1.8; max-width: 520px; margin: 0 auto 36px;
+}
+.page-sub strong { color: var(--orange-glow); font-weight: 500; }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  display: flex; align-items: center; gap: 14px;
+  padding: 36px 48px 18px;
+}
+.section-label-line { height: 1px; flex: 1; background: var(--border); }
+.section-label-text {
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(255,255,255,0.25); white-space: nowrap;
+}
+.section-label-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--orange); flex-shrink: 0;
+  box-shadow: 0 0 6px var(--orange);
+}
+
+/* ── CONFIG BLOCK ── */
+.config-block {
+  margin: 0 48px 2px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--bg-2);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.config-block.visible { opacity: 1; transform: translateY(0); }
+.config-block:first-of-type { border-radius: 0; }
+
+.config-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer !important;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s;
+}
+.config-header::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240,106,0,0.3), transparent);
+}
+.config-header:hover { background: rgba(240,106,0,0.06); }
+
+.config-header-left {
+  display: flex; align-items: center; gap: 14px;
+}
+.config-icon {
+  width: 34px; height: 34px;
+  background: rgba(240,106,0,0.1);
+  border: 1px solid var(--border-o);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--orange); flex-shrink: 0;
+}
+.config-name {
+  font-family: 'Space Mono', monospace; font-size: 12px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-bright);
+}
+.config-badge {
+  font-family: 'Space Mono', monospace; font-size: 8px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(240,106,0,0.6);
+  background: rgba(240,106,0,0.08);
+  border: 1px solid rgba(240,106,0,0.2);
+  padding: 2px 8px; border-radius: 2px; margin-left: 10px;
+}
+.config-toggle {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.3);
+  transition: color 0.2s, transform 0.3s;
+  flex-shrink: 0;
+}
+.config-header.open .config-toggle { color: var(--orange); transform: rotate(180deg); }
+
+.config-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0.16,1,0.3,1);
+}
+.config-body.open { max-height: 6000px; }
+
+/* ── CODE VIEW ── */
+.code-wrap {
+  position: relative;
+  background: #0d0d0f;
+  border-top: 1px solid var(--border);
+}
+.code-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.code-lang {
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+}
+.copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Space Mono', monospace; font-size: 8px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 3px;
+  cursor: pointer !important;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.copy-btn:hover { color: var(--orange); border-color: var(--border-o); background: rgba(240,106,0,0.06); }
+.copy-btn.copied { color: #55dd55; border-color: rgba(85,221,85,0.4); }
+
+pre {
+  padding: 20px 24px;
+  overflow-x: auto;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  line-height: 1.8;
+  color: #c0c0cc;
+  tab-size: 2;
+  white-space: pre;
+}
+pre::-webkit-scrollbar { height: 4px; }
+pre::-webkit-scrollbar-track { background: transparent; }
+pre::-webkit-scrollbar-thumb { background: var(--border-o); border-radius: 2px; }
+
+/* YAML syntax highlight */
+.y-key    { color: #79b8ff; }
+.y-val    { color: #9ecbff; }
+.y-str    { color: #9ecbff; }
+.y-num    { color: #f08d49; }
+.y-bool   { color: #f08d49; }
+.y-comment{ color: rgba(255,255,255,0.25); font-style: italic; }
+.y-anchor { color: var(--orange); }
+.y-dash   { color: rgba(255,255,255,0.4); }
+.y-null   { color: #b392f0; }
+
+/* ── FOOTER ── */
+.site-footer {
+  position: relative; z-index: 1;
+  border-top: 1px solid var(--border);
+  margin-top: 40px; padding: 22px 48px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.site-footer-text {
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.18);
+}
+.site-footer-brand {
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--orange); opacity: 0.7;
+}
+.site-footer-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border-o); flex-shrink: 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  * { cursor: auto !important; }
+  #cursor, #cursor-ring { display: none; }
+  #sidebar-nav { display: none; }
+  .wrapper { padding: 20px 14px 60px; }
+  .page-header { padding: 40px 20px 0; }
+  .section-label { padding: 28px 20px 14px; }
+  .config-block { margin: 0 0 2px; }
+  pre { font-size: 10px; padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ── SIDEBAR NAV ── -->
+<nav id="sidebar-nav">
+  <a class="nav-item" href="index.html">
+    <div class="nav-active-bar"></div>
+    <div class="nav-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="9,22 9,12 15,12 15,22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <span class="nav-label">Home</span>
+  </a>
+  <a class="nav-item" href="commands.html">
+    <div class="nav-active-bar"></div>
+    <div class="nav-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="4,17 10,11 4,5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="19" x2="20" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <span class="nav-label">Commands</span>
+  </a>
+  <a class="nav-item" href="changelog.html">
+    <div class="nav-active-bar"></div>
+    <div class="nav-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/></svg>
+    </div>
+    <span class="nav-label">Changelog</span>
+  </a>
+  <a class="nav-item active" href="configs.html">
+    <div class="nav-active-bar"></div>
+    <div class="nav-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="1.5"/></svg>
+    </div>
+    <span class="nav-label">Configs</span>
+  </a>
+  <a class="nav-item" href="integrations.html">
+    <div class="nav-active-bar"></div>
+    <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="19" cy="19" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M12 7v4M12 11l-5 6M12 11l5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <span class="nav-label">Integrations</span>
+  </a>
+  <a class="nav-item" href="contact.html">
+    <div class="nav-active-bar"></div>
+    <div class="nav-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <span class="nav-label">Contact</span>
+  </a>
+  <a class="nav-item" href="reviews.html">
+    <div class="nav-active-bar"></div>
+    <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <span class="nav-label">Reviews</span>
+  </a>
+  <a class="nav-item" href="terms.html">
+    <div class="nav-active-bar"></div>
+    <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="9" y1="13" x2="15" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="17" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <span class="nav-label">Terms</span>
+  </a>
+  <a class="nav-item nav-buy-item" href="buy.html">
+    <div class="nav-active-bar"></div>
+    <div class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M16 10a4 4 0 0 1-8 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <span class="nav-label">Buy</span>
+  </a>
+</nav>
+
+<canvas id="particle-canvas"></canvas>
+
+<div class="wrapper">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="header-eyebrow">
+      <div class="eyebrow-line"></div>
+      <div class="eyebrow-text">Plugin Configuration Files</div>
+      <div class="eyebrow-line"></div>
+    </div>
+    <div class="page-title"><span class="accent">CONFIG</span> FILES</div>
+    <p class="page-sub">All configuration files for <strong>SDF Survival Core</strong> — fully editable YAML files auto-generated on first run.</p>
+  </div>
+
+  <!-- ══════════════════ config.yml ══════════════════ -->
+  <div class="section-label">
+    <div class="section-label-dot"></div>
+    <div class="section-label-text">Main Configuration</div>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="config-block">
+    <div class="config-header" onclick="toggleConfig(this)">
+      <div class="config-header-left">
+        <div class="config-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <span class="config-name">config.yml</span>
+        <span class="config-badge">Main Config</span>
+      </div>
+      <svg class="config-toggle" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="config-body">
+      <div class="code-wrap">
+        <div class="code-toolbar">
+          <span class="code-lang">YAML</span>
+          <button class="copy-btn" onclick="copyCode(this)">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M2 8H1.5A.5.5 0 0 1 1 7.5v-6A.5.5 0 0 1 1.5 1h6a.5.5 0 0 1 .5.5V2" stroke="currentColor" stroke-width="1.2"/></svg>
+            Copy
+          </button>
+        </div>
+        <pre id="code-config"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ clan.yml ══════════════════ -->
+  <div class="section-label">
+    <div class="section-label-dot"></div>
+    <div class="section-label-text">Clan System</div>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="config-block">
+    <div class="config-header" onclick="toggleConfig(this)">
+      <div class="config-header-left">
+        <div class="config-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="config-name">clan.yml</span>
+        <span class="config-badge">Clan System</span>
+      </div>
+      <svg class="config-toggle" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="config-body">
+      <div class="code-wrap">
+        <div class="code-toolbar">
+          <span class="code-lang">YAML</span>
+          <button class="copy-btn" onclick="copyCode(this)">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M2 8H1.5A.5.5 0 0 1 1 7.5v-6A.5.5 0 0 1 1.5 1h6a.5.5 0 0 1 .5.5V2" stroke="currentColor" stroke-width="1.2"/></svg>
+            Copy
+          </button>
+        </div>
+        <pre id="code-clan"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ koths.yml ══════════════════ -->
+  <div class="section-label">
+    <div class="section-label-dot"></div>
+    <div class="section-label-text">KOTH System</div>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="config-block">
+    <div class="config-header" onclick="toggleConfig(this)">
+      <div class="config-header-left">
+        <div class="config-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 6h4V2h4v4h4V2h4v4h2v4h-2v10H5V10H3V6z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="config-name">koths.yml</span>
+        <span class="config-badge">KOTH Events</span>
+      </div>
+      <svg class="config-toggle" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="config-body">
+      <div class="code-wrap">
+        <div class="code-toolbar">
+          <span class="code-lang">YAML</span>
+          <button class="copy-btn" onclick="copyCode(this)">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M2 8H1.5A.5.5 0 0 1 1 7.5v-6A.5.5 0 0 1 1.5 1h6a.5.5 0 0 1 .5.5V2" stroke="currentColor" stroke-width="1.2"/></svg>
+            Copy
+          </button>
+        </div>
+        <pre id="code-koths"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ keys.yml ══════════════════ -->
+  <div class="section-label">
+    <div class="section-label-dot"></div>
+    <div class="section-label-text">Crates System</div>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="config-block">
+    <div class="config-header" onclick="toggleConfig(this)">
+      <div class="config-header-left">
+        <div class="config-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.77-7.77zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="config-name">keys.yml</span>
+        <span class="config-badge">Crates &amp; Keys</span>
+      </div>
+      <svg class="config-toggle" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="config-body">
+      <div class="code-wrap">
+        <div class="code-toolbar">
+          <span class="code-lang">YAML</span>
+          <button class="copy-btn" onclick="copyCode(this)">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M2 8H1.5A.5.5 0 0 1 1 7.5v-6A.5.5 0 0 1 1.5 1h6a.5.5 0 0 1 .5.5V2" stroke="currentColor" stroke-width="1.2"/></svg>
+            Copy
+          </button>
+        </div>
+        <pre id="code-keys"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ protections.yml ══════════════════ -->
+  <div class="section-label">
+    <div class="section-label-dot"></div>
+    <div class="section-label-text">Protections System</div>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="config-block">
+    <div class="config-header" onclick="toggleConfig(this)">
+      <div class="config-header-left">
+        <div class="config-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="config-name">protections.yml</span>
+        <span class="config-badge">Zone Protections</span>
+      </div>
+      <svg class="config-toggle" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="config-body">
+      <div class="code-wrap">
+        <div class="code-toolbar">
+          <span class="code-lang">YAML</span>
+          <button class="copy-btn" onclick="copyCode(this)">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M2 8H1.5A.5.5 0 0 1 1 7.5v-6A.5.5 0 0 1 1.5 1h6a.5.5 0 0 1 .5.5V2" stroke="currentColor" stroke-width="1.2"/></svg>
+            Copy
+          </button>
+        </div>
+        <pre id="code-protections"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ messages_es.yml ══════════════════ -->
+  <div class="section-label">
+    <div class="section-label-dot"></div>
+    <div class="section-label-text">Language Files</div>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="config-block">
+    <div class="config-header" onclick="toggleConfig(this)">
+      <div class="config-header-left">
+        <div class="config-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 8l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 14l6-6 2-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 5h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 2h1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M22 22l-5-10-5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.1 18h5.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <span class="config-name">messages_es.yml</span>
+        <span class="config-badge">Spanish Messages</span>
+      </div>
+      <svg class="config-toggle" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="config-body">
+      <div class="code-wrap">
+        <div class="code-toolbar">
+          <span class="code-lang">YAML</span>
+          <button class="copy-btn" onclick="copyCode(this)">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M2 8H1.5A.5.5 0 0 1 1 7.5v-6A.5.5 0 0 1 1.5 1h6a.5.5 0 0 1 .5.5V2" stroke="currentColor" stroke-width="1.2"/></svg>
+            Copy
+          </button>
+        </div>
+        <pre id="code-messages"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="site-footer-text">© 2026</div>
+    <div class="site-footer-dot"></div>
+    <div class="site-footer-brand">SDF Development</div>
+    <div class="site-footer-dot"></div>
+    <div class="site-footer-text">All rights reserved</div>
+  </footer>
+</div>
+
+<script>
+/* ── CURSOR ── */
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mx = -100, my = -100, rx = -100, ry = -100;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function animCursor() {
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+
+/* ── PARTICLES ── */
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', () => { resize(); initParticles(); });
+function initParticles() {
+  particles = [];
+  const count = Math.floor((W * H) / 18000);
+  for (let i = 0; i < count; i++) {
+    particles.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.2+0.3,
+      vx: (Math.random()-0.5)*0.25, vy: (Math.random()-0.5)*0.25, o: Math.random()*0.6+0.1 });
+  }
+}
+initParticles();
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(240,106,0,${p.o})`; ctx.fill();
+  });
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 90) {
+        ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(240,106,0,${0.08*(1-dist/90)})`; ctx.lineWidth = 0.5; ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+/* ── SCROLL REVEAL ── */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.config-block').forEach(el => revealObserver.observe(el));
+
+/* ── TOGGLE CONFIG ── */
+function toggleConfig(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  header.classList.toggle('open', !isOpen);
+}
+
+/* ── COPY CODE ── */
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied`;
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M2 8H1.5A.5.5 0 0 1 1 7.5v-6A.5.5 0 0 1 1.5 1h6a.5.5 0 0 1 .5.5V2" stroke="currentColor" stroke-width="1.2"/></svg> Copy`;
+    }, 2000);
+  });
+}
+
+/* ── YAML HIGHLIGHT ── */
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlightYaml(text) {
+  return text.split('\n').map(line => {
+    const raw = line;
+    // Comment
+    if (/^\s*#/.test(line)) return `<span class="y-comment">${escHtml(line)}</span>`;
+    // List item dash
+    if (/^\s*-\s/.test(line)) {
+      const dash = line.match(/^(\s*-\s)(.*)/);
+      if (dash) {
+        return `<span class="y-dash">${escHtml(dash[1])}</span>${escHtml(dash[2])}`;
+      }
+    }
+    // Key: value
+    const kv = line.match(/^(\s*)([^:#\s][^:]*?)(\s*:\s*)(.*)$/);
+    if (kv) {
+      const indent = escHtml(kv[1]);
+      const key = `<span class="y-key">${escHtml(kv[2])}</span>`;
+      const colon = escHtml(kv[3]);
+      let val = kv[4];
+      let valHtml;
+      if (val === '' || val === undefined) {
+        valHtml = '';
+      } else if (/^#/.test(val)) {
+        valHtml = `<span class="y-comment">${escHtml(val)}</span>`;
+      } else if (/^(true|false)$/i.test(val.trim())) {
+        valHtml = `<span class="y-bool">${escHtml(val)}</span>`;
+      } else if (/^-?\d+(\.\d+)?$/.test(val.trim())) {
+        valHtml = `<span class="y-num">${escHtml(val)}</span>`;
+      } else if (/^["']/.test(val.trim())) {
+        valHtml = `<span class="y-str">${escHtml(val)}</span>`;
+      } else if (val.trim() === '{}' || val.trim() === '[]') {
+        valHtml = `<span class="y-null">${escHtml(val)}</span>`;
+      } else {
+        valHtml = escHtml(val);
+      }
+      return `${indent}${key}${colon}${valHtml}`;
+    }
+    return escHtml(line);
+  }).join('\n');
+}
+
+/* ── RAW YAML CONTENT ── */
+const CONFIGS = {
+  config: `# ═══════════════════════════════════════════════════════════════
+# LICENSE — SurvivalSDFCore
+# ═══════════════════════════════════════════════════════════════
+# Enter the license key you received after your purchase.
+# If you don't have a key, contact the seller on BuiltByBit.
+license: "1QWEQ-DR98R-CLOKS-PLSOS-SDSDS"
+
+# Server language (messages_es.yml / messages_en.yml / messages_fr.yml)
+language: messages_en.yml
+
+# Command cooldowns (in seconds):
+command-cooldowns:
+  feed: 60
+  repair-all: 300
+  helpop: 120
+  report: 120
+
+# Teleport cooldowns (in seconds):
+teleport-cooldowns:
+  tpa: 3
+  clan-home: 3
+  spawn: 3
+  home: 3
+  back: 3
+  warp: 3
+  ps-home: 3
+
+economy:
+  starting-balance: 1000.0
+  minimum-payment: 0.1
+
+# Chat format and private message format:
+chat:
+  format: "{prefix}{player}&7: &f{message}"
+  hover:
+    enabled: true
+    balancetop-cache-minutes: 5
+    lines:
+      - "&7$ Money: &a{money}"
+      - "&7☠ Deaths: &c{deaths}"
+      - "&7⏱ Playtime: &e{time}"
+      - "&7⚔ Kills: &6{kills}"
+      - "&7★ Top rank: &b#{top}"
+  msg:
+    sent-format: "&7[&fYou &7→ &f{player}&7] &f{message}"
+    received-format: "&7[&f{player} &7→ &fYou&7] &f{message}"
+
+# Scoreboard settings:
+scoreboard:
+  enabled: true
+  show-numbers: false
+  title: "&7Survival ⏐ &c&l1.21"
+  update-ticks: 40
+  lines:
+    - "&8&m------------------------"
+    - " &e⌛ &6Player&f: &a%player_name%"
+    - " &e💰 &6Balance&f: &a%vault_eco_balance_formatted% $"
+    - " &e🏆 &6Clan&f: &c{clan}"
+    - "&8 "
+    - " &b⏱ &6Time&f: &a%statistic_time_played%"
+    - " &b📶 &6Ping&f: &a%player_ping%ms"
+    - "&8 "
+    - " &6   play.yourserver.net"
+    - "&8&m------------------------"
+
+# Death messages in chat:
+death-messages:
+  enabled: true
+
+# Advancements in chat:
+advancements:
+  enabled: false
+
+# /near command range:
+near:
+  range: 200
+
+# Join/quit messages:
+connection-messages:
+  enabled: false
+  join: "&8[&a+&8] &7{player} &7has joined the server."
+  quit: "&8[&c-&8] &7{player} &7has left the server."
+
+chunk-limits:
+  hoppers:
+    enabled: true
+    maximum: 30
+  spawners:
+    enabled: true
+    maximum: 30
+  villagers:
+    enabled: true
+    maximum: 30
+    despawn-interval-seconds: 60
+
+silk-touch-spawner:
+  enabled: true
+  permission-required: true
+  give-to-inventory: true
+
+mobstack:
+  enabled: true
+  block-radius: 10
+  max-stack: 500
+  interval-ticks: 60
+  name-format: "&a&lx{amount} &f{mob}"
+  excluded-mobs:
+    - VILLAGER
+
+world-border:
+  overworld: 1000
+  nether: 1000
+  end: 1000
+  extra-worlds:
+  #  world_name: 500
+
+combattag:
+  enabled: true
+  duration-seconds: 30
+
+  blocked-commands:
+    - /spawn
+    - /home
+    - /tpa
+    - /tp
+    - /back
+    - /clan home
+
+  block-elytra: true
+  block-ender-crystal: true
+
+  cooldowns:
+    golden-apple:
+      enabled: true
+      seconds: 30
+    notch-apple:
+      enabled: true
+      seconds: 120
+    ender-pearl:
+      enabled: true
+      seconds: 15
+
+  # Setting for when a user disconnects during combat
+  logout-npc:
+    enabled: true
+    duration-seconds: 60
+    entity: VILLAGER
+
+  lunar:
+    glow-enabled: true
+
+  bounty:
+    enabled: true
+    minimum: 100.0
+
+  # Combattag in the experience bar
+  xpbar:
+    enabled: true
+
+  lightning-on-kill:
+    enabled: true
+
+  # AFK: seconds of inactivity before being marked as AFK
+  afk:
+    time-seconds: 300
+    # If true, kicks players without core.afk.auto when they reach inactivity time
+    kick-without-permission: true
+    # If true, players inside a claimed AfkZone will NOT be kicked for AFK
+    afk-zone-protects-kick: true
+
+  # AFK Zone: area where players receive rewards for staying idle
+  afkzone:
+    enabled: true
+    interval-minutes: 15
+    # Title shown on screen while in the AFK zone
+    title-enabled: true
+    title-name: "AFKZONE"
+    title-color: "&a"
+
+    # Random rewards — one is chosen at random each time
+    # type: "item" gives an item | type: "command" runs a command as console
+    rewards:
+      diamond:
+        type: item
+        material: DIAMOND
+        amount: 1
+      experience:
+        type: command
+        command: "xp add {player} 100 points"
+
+# Nametag:
+nametag:
+  enabled: true
+  update-ticks: 100
+
+  nametag:
+    enabled: true
+    # Available placeholders:
+    #   {lp_prefix}   — LuckPerms prefix
+    #   {lp_suffix}   — LuckPerms suffix
+    #   {lp_group}    — LuckPerms primary group
+    #   {player}      — player name
+    #   {clan}        — [ClanName] or empty if none
+    #   {clan_name}   — clan name without brackets
+    #   {kills}       — player kills
+    #   {deaths}      — player deaths
+    #   {level}       — experience level
+    #   Any PlaceholderAPI placeholder (%placeholder%)
+    prefix-format: "{lp_prefix} "
+    suffix-format: ""
+
+  below-name:
+    enabled: true
+    # {kills} {deaths} {level} {player} and any PlaceholderAPI placeholder
+    format: "&c{kills} Kills &8| &7{deaths} Deaths"
+
+# ClearLag:
+clearlag:
+  enabled: true
+  interval-minutes: 5
+
+  # Remove dropped items on the ground
+  clear-items: true
+
+  # Kill world mobs
+  kill-mobs: true
+
+  # Named mobs will not be killed
+  respect-renamed: true
+  excluded-mobs:
+    - VILLAGER
+    - IRON_GOLEM
+    - CAT
+    - DOG
+    - HORSE
+    - DONKEY
+    - MULE
+    - LLAMA
+    - PARROT
+    - RABBIT
+
+staffmode:
+  enabled: true
+
+  # Maximum Y layer to detect players in the xray detector
+  xray-detector-layer: 11
+
+  # Hotbar items for staff mode
+  hotbar:
+    xray:
+      enabled: true
+      slot: 0
+      material: DIAMOND_PICKAXE
+      name: "&6&lXray Detector"
+      lore:
+        - "&7Click to see players"
+        - "&7below layer &b{layer}"
+
+    inspect:
+      enabled: true
+      slot: 2
+      material: PLAYER_HEAD
+      name: "&6&lInspect Player"
+      lore:
+        - "&7Click on a player to"
+        - "&7view their full inventory"
+
+    compass:
+      enabled: true
+      slot: 4
+      material: COMPASS
+      name: "&6&lCompass"
+      lore:
+        - "&7You need WorldEdit for this"
+
+    freeze:
+      enabled: true
+      slot: 6
+      material: ICE
+      name: "&6&lFreeze Player"
+      lore:
+        - "&7Click on a player to"
+        - "&7freeze and interrogate them"
+
+    vanish:
+      enabled: true
+      slot: 8
+      material-off: GRAY_DYE
+      name-off: "&7&lVanish &c[OFF]"
+      lore-off:
+        - "&7Click to enable vanish"
+      material-on: LIME_DYE
+      name-on: "&a&lVanish &a[ON]"
+      lore-on:
+        - "&7Click to disable vanish"
+
+  freeze:
+    time-minutes: 15
+    discord-link: "discord.gg/yourserver"
+    # Command executed by CONSOLE when a frozen player disconnects
+    # {player} = player name. Leave empty to do nothing.
+    disconnect-command: "ban {player} Disconnected while frozen - Possible cheat"
+
+  staffchat:
+    enabled: true
+    format: "&8[&4StaffChat&8] &c{prefix}{player}&8: &f{message}"
+
+leaderboards:
+  kills:
+    enabled: true
+  deaths:
+    enabled: true
+  playtime:
+    enabled: true
+
+# Auto broadcast messages:
+autobroadcast:
+  enabled: true
+  interval-minutes: 5
+  messages:
+    - "&8[&6Server&8] &eExample1 — &7Welcome to the server!"
+    - "&8[&6Server&8] &eExample2 — &7Remember to read the rules."
+    - "&8[&6Server&8] &eExample3 — &7Join our Discord!"
+
+tablist:
+  enabled: true
+  update-ticks: 60
+  # Native placeholders: {online} {tps}
+  # PlaceholderAPI: %placeholder%
+  header-lines:
+    - "&8&m                                        "
+    - " &7Survival &8⏐ &f1.21"
+    - "&8&m                                        "
+
+  footer-lines:
+    - "&8&m                                        "
+    - " &7Online: &a{online} &8| &7TPS: &a{tps}"
+    - "&8&m                                        "
+
+  # Player name format in the tab list
+  # {prefix} = LuckPerms prefix, {player} = player name
+  name: "{prefix}&f{player}"
+
+  # Rank order — lower number = higher in the tab list
+  order:
+    staff:
+      order: 1
+      permission: "core.tablist.staff"
+    vip:
+      order: 2
+      permission: "core.tablist.vip"
+    player:
+      order: 3
+      permission: ""
+
+enchant:
+  # If true, /enchant can exceed Minecraft's maximum level (e.g. Sharpness 255)
+  # If false, vanilla maximum for each enchantment is respected
+  allow-high-level: true
+
+spawner-stack:
+  enabled: false     # Enable/disable spawner stacking
+  maximum: 64        # Maximum spawners stacked in one block
+
+protections:
+  enabled: true
+  limit-per-player: 3  # Max protections per player (0 = no limit)
+
+sellwand:
+  show-actionbar: true          # Show total earned in the action bar
+  use-economyshopgui: true      # Use EconomyShopGUI for prices (if installed)
+
+  # Manual sell prices (fallback if EconomyShopGUI is not installed)
+  # material name in lowercase → price per unit
+  manual-prices:
+    wheat:       0.5
+    sugar_cane:  0.3
+    carrot:      0.4
+    potato:      0.4
+    melon_slice: 0.2
+    pumpkin:     1.0
+    cobblestone: 0.1
+    iron_ingot:  3.0
+    gold_ingot:  5.0
+    diamond:     30.0
+
+  # SellWand types (you can add as many as you want)
+  types:
+    Example:
+      material: BLAZE_ROD
+      name: "&6&lSellWand &7Example"
+      lore:
+        - ""
+        - "&7Sell the contents of a chest"
+        - "&7with a simple right-click."
+        - ""
+        - "&7Uses remaining: &f{uses}"
+        - "&7Multiplier: &f{multiplier}"
+        - ""
+      default-uses: 100
+      default-multiplier: 1.0
+
+rtp:
+  enabled: true
+  cooldown: 3                # Seconds between uses (0 = no cooldown)
+  immunity-seconds: 5        # Seconds of damage immunity after teleport
+  min-radius: 100            # Minimum distance from spawn (blocks)
+  max-radius: 5000           # Maximum distance from spawn (blocks)
+  queue-interval-ticks: 20   # Ticks between each queued teleport
+  warmup-seconds: 3          # Seconds to wait before teleporting (0 = instant)
+  cancel-on-move: true       # Cancel RTP if the player moves during warmup
+
+  effects:
+    enabled: true
+    particle: END_ROD        # Bukkit Particle enum name
+
+# LunarClient:
+lunar:
+
+  waypoints:
+    spawn:
+      enabled: true
+      name: "Spawn"
+      color: "GREEN"
+
+  discord-link:
+    enabled: true
+    server-name: "Your server"
+    gamemode-name: "Survival"
+    playing: "Playing survival 1.21"
+    player: "Exploring the world"
+
+  glow:
+    staff:
+      enabled: true
+      color: "YELLOW"
+    pvp:
+      ally-color: "GREEN"
+      enemy-color: "RED"
+
+  team:
+    enabled: true
+    interval: 20
+    marker-color: "WHITE"
+
+  combat:
+    old-pvp: true
+
+mysql:
+  enabled: false
+  host: "localhost"
+  port: 3306
+  database: "survivalsdf"
+  username: "root"
+  password: ""
+  pool-size: 10`,
+
+  clan: `# ── Clan Configuration ────────────────────────────────────────────────
+
+clan:
+  name-min: 3
+  name-max: 16
+  members-max: 30
+  allies-max: 3
+  forbidden-names:
+    - admin
+    - staff
+    - owner
+    - mod
+# Points awarded for each feature
+points:
+  kill: 1
+  death: 1
+  koth: 50
+
+# Enable or disable each top individually in /clan top
+tops:
+  points:  true
+  kills:   true
+  deaths:  true
+  money:   true
+
+lunar:
+  glow-ally:      "ORANGE"
+  glow-enemy:     "RED"
+  glow-teammate:  "GREEN"
+  marker-teammate: "GREEN"
+
+chat:
+  format-tag:  "&2[{clan}] "
+  format-clan:  "&2[CLAN] &f{clan-name} &f{player}&7: &a{message}"
+  format-ally:  "&6[ALLY] &f{clan-name} &7{player}&7: &e{message}"`,
+
+  koths: `# ── KOTH Configuration ─────────────────────────────────────────────────
+
+# Default scoreboard for the koth:
+default-scoreboard:
+  title: "&6&lKOTH &8⏐ &cPvP"
+  show-numbers: false
+  lines:
+    - "&8&m--------------------"
+    - " &6KOTH&f: &c&l{koth}"
+    - "&8 "
+    - " &c⚔ &6Capturing&f: &a{capturing}"
+    - "&8 "
+    - " &c⌛ &6Remaining&f: &a{remaining}"
+    - "&8 "
+    - " &6Zone&f: &c/warp koth"
+    - "&8&m--------------------"
+
+# KOTHs are created here automatically with /koth create
+koths: {}`,
+
+  keys: `# ── Crates Configuration ────────────────────────────────────────────────
+
+# Preview configuration
+preview:
+  border-material: ORANGE_STAINED_GLASS_PANE
+  store: "store.example.com"
+
+#crates:
+#  Example:
+#    color: GOLD
+#    animation: CSGO
+#    animation-ticks: 60
+#    key:
+#      name: "&6&lElite Key"
+#      material: TRIPWIRE_HOOK
+#      _tag: "elite-key-abc123"
+#      lore:
+#        - "&7Right click: &aOpen crate"
+#        - "&7Left click: &ePreview"
+#    hologram:
+#      lines:
+#        - "&6&lElite Crate"
+#        - "&eLeft click &7— Preview"
+#        - "&aRight click &7— Open"
+#        - "&7Buy: &fstore.example.com"
+#    loot:
+#      slot0:
+#        material: DIAMOND
+#        amount: 3
+#        name: "&b3 Diamonds"
+#        percentage: 40.0
+#      slot1:
+#        material: ENCHANTED_BOOK
+#        amount: 1
+#        name: "&9Fortune III Book"
+#        percentage: 10.0
+#        enchanted-book:
+#          fortune: 3
+#      slot2:
+#        material: GOLD_INGOT
+#        amount: 1
+#        name: "&e$5000 Coins"
+#        percentage: 50.0
+#        commands:
+#          - "eco give {player} 5000"
+#          - "broadcast &a{player} &7won &e$5000 &7from the Elite crate!"
+#    # Broadcast when opening this crate (optional)
+#    broadcast:
+#      enabled: true
+#      format: "&6[Crate] &f{player} &eopened the &6{crate}&e crate and won: &f{prize}!"
+#    locations: []
+
+crates: {}`,
+
+  protections: `# ── Protections Configuration ────────────────────────────────────────────────
+protections:
+
+  Example:
+    # Radius in blocks from the center block (7 = 15x15 zone)
+    radius: 7
+    # Price to purchase with /ps get (0 = free)
+    price: 0
+    # Block placed in the world
+    material: OBSIDIAN
+    item-name: "&5&l⬡ Protection Example"
+    item-lore:
+      - ""
+      - "&7Size: &f15x15"
+      - "&7Radius: &f7 blocks"
+      - ""
+      - "&7Place it on the ground to"
+      - "&7protect the area."
+      - ""
+    # Default flags when placed
+    default-flags:
+      pvp: false
+      mob-spawning: false
+      ender-pearl: true
+      explosions: false
+      fire-spread: false
+      interact: false
+      mob-killing: false`,
+
+  messages: `prefix: ""
+
+# ─── General ──────────────────────────────────────────────────────────────────
+players-only: "&7Solo los jugadores pueden usar este comando."
+no-permission: "&cNo tienes permiso para ejecutar este comando."
+player-not-found: "&cNo se ha encontrado ningun jugador con ese nombre."
+teleport-pending: "&cYa tienes un teleporte en curso, no te muevas!"
+teleport-cancelled: "&cTeleporte cancelado."
+
+# ─── Spawn ────────────────────────────────────────────────────────────────────
+spawn-teleporting: "&7Teleportando al spawn en &f{segundos}s&7..."
+spawn-teleported: "&aTeleportado al spawn."
+spawn-teleported-by-admin: "&7Has sido teleportado al spawn por &f{admin}&7."
+spawn-teleported-player: "&f{jugador} &7ha sido teleportado al spawn."
+spawn-no-permission-others: "&cNo puedes teleportar a otros jugadores al spawn."
+spawn-set: "&aSpawn establecido correctamente."
+spawn-no-permission-setspawn: "&cNo tienes permiso para establecer el spawn."
+
+# ─── Spawn Zone ───────────────────────────────────────────────────────────────
+spawnzone-tool-name: "&c&lSeleccionador de Zona Spawn"
+spawnzone-tool-lore1: "&7Click izquierdo &f→ &ePosicion 1"
+spawnzone-tool-lore2: "&7Click derecho &f→ &ePosicion 2"
+spawnzone-tool-lore3: "&7Shift + Click &f→ &aConfirmar zona"
+spawnzone-tool: "&aRecibiste la herramienta de seleccion de la zona spawn."
+spawnzone-pos1: "&aPos1 seleccionada: &f{x}, {y}, {z}"
+spawnzone-pos2: "&aPos2 seleccionada: &f{x}, {y}, {z}"
+spawnzone-zone-saved: "&aZona spawn guardada para el mundo &f{mundo}&a."
+spawnzone-not-found: "&cNo hay ninguna zona spawn configurada."
+spawnzone-already-exists: "&cEste mundo ya tiene una zona spawn. Usa &f/spawnzone delete &cprimero."
+spawnzone-deleted: "&cZona spawn del mundo &f{mundo} &celiminada."
+spawnzone-confirm-points: "&cDebes marcar el &aPunto 1 &c(click izq) y el &cPunto 2 &c(click der) antes de confirmar."
+spawnzone-points-ready: "&aAmbos puntos listos. Haz &fShift+Click &apara confirmar."
+spawnzone-no-pearl: "&cNo puedes usar perlas de ender en la zona spawn."
+spawnzone-info: "&aLa zona spawn esta activa."
+spawnzone-info-none: "&cNo hay zonas spawn configuradas."
+spawnzone-info-header: "&a&lZonas Spawn:"
+spawnzone-info-line: "&7• &f{mundo}: &aActiva"
+spawnzone-info-line-active: "&7• &f{mundo}: &aActiva"
+spawnzone-info-line-inactive: "&7• &f{mundo}: &cNo configurada"
+spawnzone-world-not-found: "&cEste mundo no tiene zona spawn configurada."
+spawnzone-entering: "&a[Spawn] &eEntraste en la zona protegida del spawn."
+spawnzone-leaving: "&a[Spawn] &eSaliste de la zona protegida del spawn."
+spawnzone-combat: "&cNo puedes entrar a la zona spawn mientras estas en combate!"
+spawnzone-no-break: "&cNo puedes romper bloques en la zona spawn."
+spawnzone-no-build: "&cNo puedes colocar bloques en la zona spawn."
+spawnzone-help-header: "&c&lComandos de Spawn Zone:"
+spawnzone-help-create: "Definir la zona spawn de tu mundo actual"
+spawnzone-help-delete: "Eliminar la zona spawn de tu mundo actual"
+spawnzone-help-info: "Ver todas las zonas spawn configuradas"
+
+# ─── Homes ────────────────────────────────────────────────────────────────────
+home-teleporting: "&7Teleportando a &f{home} &7en &f{segundos}s&7..."
+home-teleported: "&aTeleportado a &f{home}&a."
+home-not-found: "&cNo tienes ningun home llamado &f{home}&c."
+home-none: "&cAun no tienes ningun home. Usa &f/sethome&c."
+home-saved: "&aHome &f{home} &aguardado."
+home-limit: "&cHas alcanzado tu limite de &f{limite} &chomes."
+home-deleted: "&aHome &f{home} &aeliminado."
+home-deleted-not-found: "&cNo tienes ningun home llamado &f{home}&c."
+home-usage-delhome: "&cUso correcto: &f/delhome <nombre>&c."
+home-no-permission-others: "&cNo puedes ver los homes de otros jugadores."
+home-other-player-empty: "&f{jugador} &7no tiene ningun home."
+homes-list-header: "&8&m                                        "
+homes-list-item: "  &7▶ &f{home} &8— &7/home {home}"
+homescheck-no-homes: "&7{jugador} &cno tiene ningun home guardado."
+homescheck-not-found: "&cEse jugador nunca ha jugado en este servidor."
+
+# ─── Back ─────────────────────────────────────────────────────────────────────
+back-teleporting: "&7Volviendo a tu ubicacion anterior en &f{segundos}s&7..."
+back-teleported: "&7Has vuelto a tu ultima ubicacion."
+back-no-location: "&cNo tienes ninguna ubicacion guardada."
+
+# ─── Top ──────────────────────────────────────────────────────────────────────
+top-done: "&aTeleportado a la superficie."
+top-not-found: "&cNo hay bloque solido encima de ti."
+
+# ─── TPA ──────────────────────────────────────────────────────────────────────
+tpa-sent: "&aHas enviado una solicitud de teletransporte a &f{jugador}&a."
+tpa-received: "&f{jugador} &ate ha enviado una solicitud de teletransporte. Usa &f/tpaccept &ao &f/tpadeny&a."
+tpahere-sent: "&aHas pedido a &f{jugador} &aque venga hacia ti."
+tpahere-received: "&f{jugador} &ate ha pedido que vayas hacia el. Usa &f/tpaccept &ao &f/tpadeny&a."
+tpa-instructions: "&7Escribe &f/tpaccept &7para aceptar o &f/tpadeny &7para rechazar."
+tpa-accepted: "&aHas aceptado la solicitud de &f{jugador}&a."
+tpa-accepted-sender: "&f{jugador} &aha aceptado tu solicitud."
+tpa-denied: "&cHas rechazado la solicitud de &f{jugador}&c."
+tpa-denied-sender: "&f{jugador} &cha rechazado tu solicitud."
+tpa-countdown: "&aTeletransportando en &f{segundos}s&a... No te muevas."
+tpa-cancelled-move: "&cTeletransporte cancelado porque te has movido."
+tpa-teleported: "&aTeletransportado a &f{jugador}&a."
+tpa-player-offline: "&cEl jugador ya no esta conectado."
+tpa-no-request: "&cNo tienes ninguna solicitud de teletransporte pendiente."
+tpa-self: "&cNo puedes enviarte una solicitud a ti mismo."
+tpa-expirada: "&cTu solicitud de teletransporte a &f{jugador} &cha expirado."
+tpa-expirada-otro: "&cLa solicitud de teletransporte de &f{jugador} &cha expirado."
+tpall-success: "&aTeletransportados &f{cantidad} &ajugadores hacia ti."
+
+# ─── Warps ────────────────────────────────────────────────────────────────────
+warp-list: "&6Warps disponibles: &f{warps}"
+warp-list-empty: "&7No hay warps disponibles."
+warp-not-found: "&cEl warp &f{warp} &cno existe."
+warp-world-not-loaded: "&cEl mundo de ese warp no esta cargado."
+warp-teleported: "&aTeletransportado a &f{warp}&a."
+warp-teleporting: "&7Teletransportando a &f{warp} &7en &f{segundos}s&7... (no te muevas)"
+warp-created: "&aWarp &f{warp} &acreado correctamente."
+warp-deleted: "&aWarp &f{warp} &aeliminado correctamente."
+warp-cooldown: "&cEspera &f{tiempo}s &cantes de volver a usar /warp."
+warp-list-header: "&8&m───────────────&r &6&lWARPS &8&m───────────────"
+warp-list-row-available: " &8[&a➤&8] &a{warp} &8— &7Clic para teleportar"
+warp-list-row-cooldown: " &8[&e⏱&8] &f{warp} &8— &eCooldown: &f{tiempo}s"
+warp-list-hover: "&aClic para ir a &f{warp}"
+warp-list-footer: "&8&m──────────────────────────────────"
+
+# ─── RTP ──────────────────────────────────────────────────────────────────────
+rtp-disabled: "&cEl RTP está desactivado."
+rtp-queued: "&7Buscando ubicación en &f{mundo}&7... (posición en cola: &f{pos}&7)"
+rtp-already-queued: "&cYa estás en la cola de teletransporte."
+rtp-cooldown: "&cDebes esperar &f{tiempo} &cpara usar /rtp de nuevo."
+rtp-teleported: "&aTeletransportado a &f{x}, {y}, {z} &aen &f{mundo}&a."
+rtp-no-safe-location: "&cNo se encontró una ubicación segura. Inténtalo de nuevo."
+rtp-world-not-found: "&cEl mundo &f{mundo} &cno existe."
+rtp-immunity-actionbar: "&b⚡ Inmunidad: &f{tiempo}s"
+rtp-error: "&cError al procesar el RTP."
+rtp-cancelled-move: "&cRTP cancelado porque te has movido."
+rtp-warmup: "&7Teletransportando en &f{segundos}s&7... (no te muevas)"
+rtp-searching-title: "&6Buscando..."
+rtp-searching-subtitle: "&7Buscando una ubicación segura"
+rtp-arrival-title: "&a¡Teletransportado!"
+rtp-arrival-subtitle: "&7{mundo} &8— &f{x}, {y}, {z}"
+
+# ─── Kits ─────────────────────────────────────────────────────────────────────
+kit-inventory-full: "&cNecesitas el inventario vacio para recibir un kit."
+kit-no-permission: "&cNo tienes acceso a este kit."
+kit-cooldown: "&cEste kit estara disponible en &f{tiempo}&c."
+kit-received: "&aHas recibido el kit &f{kit}&a."
+kit-not-found: "&cEse kit no existe."
+kit-created: "&aKit &f{kit} &acreado correctamente."
+kit-deleted: "&aKit &f{kit} &aeliminado correctamente."
+kit-usage-create: "&cUso correcto: &f/createkit <nombre> <cooldown-segundos>&c."
+kit-usage-delete: "&cUso correcto: &f/deletekit <nombre>&c."
+kits-empty: "&cNo hay ningun kit disponible."
+kits-list-no-permission: "&c✗ Sin permiso"
+kits-list-header: "&8&m───────────────&r &6&lKITS &8&m───────────────"
+kits-list-row-available: " &8[&a✔&8] &a{kit} &8— &7Clic para recibir"
+kits-list-row-cooldown: " &8[&e⏱&8] &f{kit} &8— &eCooldown: &f{tiempo}"
+kits-list-row-locked: " &8[&c✗&8] &7{kit} &8— &cSin permiso"
+kits-list-hover: "&aClick para recibir el kit &f{kit}"
+kits-list-footer: "&8&m──────────────────────────────────"
+
+# ─── Cajas (Crates) ───────────────────────────────────────────────────────────
+crate-no-key: "&cNecesitas una llave de &6{caja} &cpara abrir esta caja."
+crate-opened: "&a¡Abriste la caja &6{caja}&a! Ganaste: &f{premio}"
+crate-setplace-ok: "&aCaja &6{caja} &acolocada en &f{x}, {y}, {z}&a."
+crate-block-protected: "&cEste bloque es una caja y no se puede romper."
+crate-animation-active: "&cEspera a que termine la animacion actual."
+crate-no-loot: "&cEsta caja no tiene loot configurado."
+crate-loot-saved: "&aLoot de &6{caja} &aguardado."
+crate-broadcast: "&6[Caja] &f{jugador} &eabrio la caja &6{caja}&e y gano: &f{premio}!"
+crate-preview-title: "&8Vista: &6{caja}"
+crate-preview-crate-name: "&6&l{caja}"
+crate-preview-previous: "&6&l← Anterior"
+crate-preview-next: "&6&lSiguiente →"
+crate-preview-rewards: "&7{n} premios posibles"
+crate-preview-page: "&7Pagina &e{p}&7 de &e{total}"
+crate-cmd-no-permission: "&cNo tienes permiso."
+crate-cmd-players-only: "&cSolo jugadores."
+crate-cmd-not-found: "&cEsa caja no existe."
+crate-cmd-internal-error: "&cError interno."
+crate-cmd-player-not-found: "&cJugador no encontrado."
+crate-cmd-invalid-amount: "&cCantidad invalida."
+crate-cmd-amount-zero: "&cLa cantidad debe ser mayor que 0."
+crate-cmd-unknown-subcommand: "&cSubcomando desconocido. Usa: give"
+crate-cmd-need-item: "&cNecesitas un item en la mano."
+crate-cmd-usage-create: "&cUso: /crate create <nombre>"
+crate-cmd-usage-delete: "&cUso: /crate delete <nombre>"
+crate-cmd-usage-setkey: "&cUso: /crate setkey <nombre>"
+crate-cmd-usage-setcolor: "&cUso: /crate setcolor <nombre> <color>"
+crate-cmd-usage-setloot: "&cUso: /crate setloot <nombre>"
+crate-cmd-usage-setplace: "&cUso: /crate setplace <nombre>"
+crate-cmd-usage-removeplace: "&cUso: /crate removeplace <nombre>"
+crate-cmd-usage-setanimation: "&cUso: /crate setanimation <nombre> <CSGO|WHEEL|SPIN|FLICKER|DROP>"
+crate-cmd-usage-key-give: "&cUso: /crate key give <jugador|all> <caja> <cantidad>"
+crate-cmd-already-exists: "&cYa existe una caja con ese nombre."
+crate-cmd-created: "&aCaja &6{caja} &acreada. Configura el loot con &f/crate setloot {caja}"
+crate-cmd-deleted: "&aCaja &6{caja} &aeliminada."
+crate-cmd-key-set: "&aLlave de &6{caja} &aconfigurada con &f{material}"
+crate-cmd-color-changed: "&aColor de &6{caja} &acambiado a &f{color}"
+crate-cmd-setplace-instruction: "&aHaz &eclick izquierdo &aen el bloque donde quieres colocar la caja &6{caja}&a."
+crate-cmd-invalid-animation: "&cAnimacion invalida. Opciones: &f{opciones}"
+crate-cmd-animation-changed: "&aAnimacion de &6{caja} &acambiada a &f{animacion}"
+crate-cmd-locations-deleted: "&aTodas las ubicaciones de &6{caja} &aeliminadas."
+crate-cmd-list-empty: "&7No hay cajas configuradas."
+crate-cmd-list: "&6Cajas disponibles: &f{cajas}"
+crate-cmd-key-given: "&aDadas &f{cantidad} &allaves de &6{caja} &aa &f{jugador}"
+crate-cmd-key-given-all: "&aDadas &f{cantidad} &allaves de &6{caja} &aa todos los jugadores."
+crate-cmd-key-received: "&aRecibiste &f{cantidad} &allaves. Usalas en las cajas del servidor."
+crate-cmd-loot-editor-instruction: "&7Coloca los items del loot. &e¡Cierra el inventario para guardar!"
+crate-help-header: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+crate-help-title: "&6&lSistema de Cajas &8— Comandos"
+crate-help-create: " &f/crate create <nombre>      &7Crear caja"
+crate-help-delete: " &f/crate delete <nombre>      &7Eliminar caja"
+crate-help-setkey: " &f/crate setkey <nombre>      &7Fijar llave (item en mano)"
+crate-help-setcolor: " &f/crate setcolor <nombre> <color>  &7Color"
+crate-help-setloot: " &f/crate setloot <nombre>     &7Editar loot"
+crate-help-setplace: " &f/crate setplace <nombre>    &7Marcar bloque como caja"
+crate-help-removeplace: " &f/crate removeplace <nombre> &7Quitar todos los bloques"
+crate-help-key: " &f/crate key give <jugador|all> <caja> <cantidad>"
+crate-help-list: " &f/crate list                 &7Ver cajas"
+crate-help-setanimation: " &f/crate setanimation <nombre> <CSGO|WHEEL|SPIN|FLICKER|DROP>"
+crate-help-footer: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# ─── Economía ─────────────────────────────────────────────────────────────────
+economy-disabled: "&cLa economia no esta disponible."
+balance-self: "&7Tu saldo actual es de &f\${balance}&7."
+balance-other: "&7El saldo de &f{jugador} &7es de &f\${balance}&7."
+balance-no-permission-others: "&cNo puedes ver el saldo de otros jugadores."
+pay-usage: "&cUso correcto: &f/pay <jugador> <cantidad>&c."
+pay-sent: "&7Has enviado &f\${cantidad} &7a &f{jugador}&7."
+pay-received: "&f{jugador} &7te ha enviado &f\${cantidad}&7."
+pay-insufficient-funds: "&cNo tienes saldo suficiente."
+pay-invalid-amount: "&cLa cantidad debe ser un numero valido."
+pay-minimum: "&cEl pago minimo es de &f\${minimo}&7."
+pay-self: "&cNo puedes enviarte dinero a ti mismo."
+eco-usage: "&cUso correcto: &f/eco <set|give|take> <jugador|all> <cantidad>&c."
+eco-set: "&7Has fijado el saldo de &f{jugador} &7a &f\${cantidad}&7."
+eco-set-received: "&7Tu saldo ha sido fijado a &f\${cantidad}&7."
+eco-give: "&7Has dado &f\${cantidad} &7a &f{jugador}&7."
+eco-give-received: "&7Has recibido &f\${cantidad}&7."
+eco-give-all: "&7Has dado &f\${cantidad} &7a &f{jugadores} &7jugadores conectados."
+eco-take: "&7Has quitado &f\${cantidad} &7a &f{jugador}&7."
+eco-take-received: "&7Se te han quitado &f\${cantidad}&7."
+
+# ─── Balance Top ──────────────────────────────────────────────────────────────
+baltop-title: "&0&lBalance Top"
+baltop-entry-name: "&6#&e{posicion} &f{jugador}"
+baltop-hover-sep: "&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+baltop-hover-position: "&6#&e{posicion} &f{jugador}"
+baltop-hover-money: "&6$ Balance: &a{dinero}"
+baltop-hover: []
+
+# ─── SellWand ─────────────────────────────────────────────────────────────────
+sellwand-usage: "&cUso: /sellwand give <tipo> <jugador> [usos] [multiplicador]"
+sellwand-type-not-found: "&cEse tipo de SellWand no existe."
+sellwand-received: "&aHas recibido un &f{tipo} SellWand&a. Usos: &f{usos}&a, Mult: &f{mult}x&a."
+sellwand-given: "&aDado SellWand &f{tipo} &aa &f{jugador}&a."
+sellwand-no-uses: "&cEste SellWand no tiene usos restantes."
+sellwand-depleted: "&cTu SellWand se ha agotado."
+sellwand-empty: "&7El cofre no tiene ítems vendibles."
+sellwand-sold: "&aVendiste &f{items} &aitems por &f{dinero}&a. (x{mult})"
+sellwand-actionbar: "&a+{dinero} &7vendido"
+
+# ─── Chat ─────────────────────────────────────────────────────────────────────
+chat-hover-no-data: "&7Sin datos disponibles."
+chat-muted: "&c[!] &f{admin} &7ha silenciado el chat."
+chat-unmuted: "&a[!] &f{admin} &7ha activado el chat."
+chat-you-are-muted: "&cEl chat esta silenciado. No puedes hablar ahora."
+chat-cleared: "&7[!] &f{admin} &7ha limpiado el chat."
+chat-delay: "&cDebes esperar &f{segundos}s &cpara volver a hablar."
+delaychat-usage: "&cUso correcto: &f/delaychat <segundos>&c. Usa 0 para desactivar."
+delaychat-invalid: "&cIntroduce un numero valido de segundos (0 o mas)."
+delaychat-enabled: "&7[!] &f{admin} &7ha activado el delay del chat: &f{segundos}s&7."
+delaychat-disabled: "&7[!] &f{admin} &7ha desactivado el delay del chat."
+broadcast-prefix: "&8[&6Anuncio&8] &f"
+
+# ─── Mensajes privados ────────────────────────────────────────────────────────
+msg-usage: "&cUso correcto: &f/msg <jugador> <mensaje>&c."
+msg-usage-r: "&cUso correcto: &f/r <mensaje>&c."
+msg-self: "&cNo puedes enviarte mensajes a ti mismo."
+msg-no-conversation: "&cNo tienes ninguna conversacion reciente. Usa &f/msg <jugador>&c."
+msg-recipient-offline: "&cEsa persona ya no esta conectada."
+msg-toggle-target: "&f{jugador} &7tiene los mensajes privados desactivados."
+msg-ignored: "&f{jugador} &7te tiene ignorado."
+msgtoggle-enabled: "&cMensajes privados desactivados. Nadie te podra escribir."
+msgtoggle-disabled: "&aMensajes privados activados."
+ignore-usage: "&cUso correcto: &f/ignore <jugador>&c."
+ignore-self: "&cNo puedes ignorarte a ti mismo."
+ignore-enabled: "&7Has ignorado a &f{jugador}&7."
+ignore-disabled: "&7Has dejado de ignorar a &f{jugador}&7."
+
+# ─── HelpOp ───────────────────────────────────────────────────────────────────
+helpop-sent: "&aTu mensaje ha sido enviado a los administradores."
+helpop-received: "&c[HelpOp] &f{jugador}&7: &f{mensaje}"
+helpop-cooldown: "&cDebes esperar &f{segundos}s &cantes de usar /helpop de nuevo."
+helpop-usage: "&cUso: &f/helpop <mensaje>"
+
+# ─── Report ───────────────────────────────────────────────────────────────────
+report-sent: "&aReporte enviado contra &f{jugador}&a. El staff ha sido notificado."
+report-self: "&cNo puedes reportarte a ti mismo."
+report-cooldown: "&cDebes esperar &f{tiempo}s &cantes de volver a reportar."
+report-no-reason: "Sin motivo especificado"
+report-staff-notif: "&8[&cReport&8] &f{reporter} &7→ &f{reported}&8: &e{motivo}"
+seereports-title: "&8Reportes de &f{jugador}"
+seereports-empty: "&7&f{jugador} &7no tiene ningún reporte."
+
+# ─── AFK ──────────────────────────────────────────────────────────────────────
+afk-enabled: "&7Ahora estas AFK."
+afk-disabled: "&7Ya no estas AFK."
+afk-kicked: "&cFuiste expulsado por inactividad."
+afkzone-entering: "&6[AFK Zone] &eEntraste en la zona AFK."
+afkzone-leaving: "&6[AFK Zone] &eSaliste de la zona AFK."
+afkzone-reward: "&6[AFK Zone] &eRecibiste &f{cantidad}x {item}&e por estar en la zona AFK!"
+afkzone-reward-command: "&6[AFK Zone] &eRecibiste un premio por estar en la zona AFK!"
+afkzone-tool: "&aRecibiste la herramienta de seleccion de zona AFK."
+afkzone-pos1: "&aPos1 seleccionada: &f{x}, {y}, {z}"
+afkzone-pos2: "&aPos2 seleccionada: &f{x}, {y}, {z}"
+afkzone-zone-saved: "&aZona AFK guardada correctamente."
+afkzone-zone-not-found: "&cNo hay ninguna zona AFK configurada."
+afkzone-tool-name: "&6&lSeleccionador de Zona AFK"
+afkzone-tool-lore1: "&7Click izquierdo &f→ &ePosicion 1"
+afkzone-tool-lore2: "&7Click derecho &f→ &ePosicion 2"
+afkzone-tool-lore3: "&7Shift + Click &f→ &aConfirmar zona"
+afkzone-already-exists: "&cYa existe una zona AFK. Usa &f/afkzone delete &cprimero."
+afkzone-zone-deleted: "&cZona AFK eliminada."
+afkzone-confirm-points: "&cDebes marcar el &aPunto 1 &c(click izq) y el &cPunto 2 &c(click der) antes de confirmar."
+afkzone-points-ready: "&aAmbos puntos listos. Haz &fShift+Click &apara confirmar."
+afkzone-instructions: "&7Click izq &f→ &ePosicion 1 &7| Click der &f→ &ePosicion 2 &7| Shift+Click &f→ &aConfirmar"
+help-afkzone-header: "&6Comandos de AfkZone:"
+help-afkzone-lines:
+  - "  &f/afkzone create  &7— Herramienta para definir la zona"
+  - "  &f/afkzone delete  &7— Eliminar la zona AFK"
+  - "  &f/afkzone rewards &7— Ver recompensas disponibles"
+
+# ─── Combate ──────────────────────────────────────────────────────────────────
+combat-in-combat: "&cEstas en combate con &f{jugador}&c!"
+combat-ended: "&aSaliste del combate."
+combat-command-blocked: "&cNo puedes usar ese comando mientras estas en combate!"
+combat-elytra-blocked: "&cNo puedes usar la elytra mientras estas en combate!"
+combat-crystal-blocked: "&cNo puedes colocar ender crystals mientras estas en combate!"
+combat-no-pvp-zone: "&cNo puedes entrar a una zona sin PVP mientras estas en combate!"
+combat-cooldown-apple: "&cLa manzana dorada esta en cooldown! Espera &f{tiempo}s&c."
+combat-cooldown-notch: "&cLa manzana de Notch esta en cooldown! Espera &f{tiempo}s&c."
+combat-cooldown-pearl: "&cLa perla de ender esta en cooldown! Espera &f{tiempo}s&c."
+combat-logout-kill: "&c{killer} &emato a &c{victim} &emientras intentaba desconectarse!"
+combat-death-logout: "&cMoriste mientras intentabas desconectarte en combate."
+combat-reconnect: "&cHas reconectado en combate. &f{tiempo}s &crestantes."
+
+# ─── Bounty ───────────────────────────────────────────────────────────────────
+bounty-placed: "&6[Bounty] &f{placer} &eha puesto &6{cantidad}$ &esobre la cabeza de &f{target}&e! (Total: &6{total}$&e)"
+bounty-claimed: "&6[Bounty] &f{killer} &eha matado a &f{victim} &ey ha cobrado &6{cantidad}$&e!"
+bounty-minimum: "&cLa cantidad minima de bounty es &f{minimo}&c."
+bounty-no-money: "&cNo tienes suficiente dinero."
+bounty-self: "&cNo puedes ponerte un bounty a ti mismo."
+bounty-not-found: "&cEse jugador no existe."
+bounty-disabled: "&cEl sistema de bounty no esta habilitado."
+bounty-list-empty: "&7No hay bounties activos."
+bounty-list-header: "&6&l━━━━━━━━ Bounties Activos ━━━━━━━━"
+bounty-list-line: " &7{pos}. &f{target} &8— &6{cantidad} &8(por &7{placer}&8)"
+bounty-list-footer: "&6&l━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# ─── KOTH ─────────────────────────────────────────────────────────────────────
+koth-help-header: "&6&l[KOTH] &eComandos disponibles:"
+koth-help-lines:
+  - "  &f/koth create <nombre> &7- Crear un koth"
+  - "  &f/koth setcapzone <nombre> &7- Fijar la capzone"
+  - "  &f/koth setloot <nombre> &7- Editar el loot"
+  - "  &f/koth settime <segundos> <nombre> &7- Fijar tiempo de captura"
+  - "  &f/koth schedule add <nombre> <HH:MM> &7- Programar koth"
+  - "  &f/koth schedule &7- Ver proximos koths"
+  - "  &f/koth list &7- Ver todos los koths"
+  - "  &f/koth start <nombre> &7- Iniciar koth"
+  - "  &f/koth end &7- Terminar koth activo"
+koth-schedule-header: "&6&l[KOTH] &eKoths programados:"
+koth-schedule-line: "  &7▶ &f{koth} &7— &e{hora}"
+koth-schedule-empty: "&6[KOTH] &eNo hay koths programados."
+koth-schedule-current-time: "&7Hora actual del servidor: &f{hora}"
+koth-zone-entering: "&6[KOTH] &eEntrando a la zona del KOTH &f{koth}&e."
+koth-zone-leaving: "&6[KOTH] &eSaliendo de la zona del KOTH &f{koth}&e."
+koth-start: "&6&l[KOTH] &eEl KOTH &f{koth} &eha comenzado! Ve a capturarlo!"
+koth-capturing: "&6[KOTH] &f{jugador} &eesta capturando el KOTH!"
+koth-capturing-with-clan: "&6[KOTH] &f{jugador} &8({clan}) &eesta capturando el KOTH!"
+koth-contested: "&6[KOTH] &eCaptura en disputa!"
+koth-winner: "&6&l[KOTH] &f{jugador} &eha capturado el KOTH &f{koth}&e!"
+koth-winner-with-clan: "&6&l[KOTH] &f{jugador} &8({clan}) &eha capturado el KOTH &f{koth}&e!"
+koth-ended: "&6[KOTH] &eEl KOTH &f{koth} &eha terminado sin ganador."
+koth-no-koths: "&6[KOTH] &eNo hay koths creados."
+koth-list-header: "&6&l[KOTH] &eKoths disponibles:"
+koth-list-line: "  &7▶ &f{koth}{activo}"
+koth-list-active: " &a[ACTIVO]"
+koth-usage-create: "&cUso: &f/koth create <nombre>"
+koth-already-exists: "&cYa existe un koth con ese nombre."
+koth-created: "&aKoth &f{koth} &acreado. Selecciona el recinto con el hacha."
+koth-usage-delete: "&cUso: &f/koth delete <nombre>"
+koth-not-found: "&cEse koth no existe."
+koth-no-delete-active: "&cNo puedes borrar un koth que esta activo. Usa &f/koth end &cprimero."
+koth-deleted: "&aKoth &f{koth} &aeliminado correctamente."
+koth-usage-setcapzone: "&cUso: &f/koth setcapzone <nombre>"
+koth-usage-setloot: "&cUso: &f/koth setloot <nombre>"
+koth-usage-settime: "&cUso: &f/koth settime <segundos> <nombre>"
+koth-settime-invalid: "&cIntroduce un numero valido."
+koth-settime-ok: "&aTiempo de captura de &f{koth} &afijado a &f{segundos}s&a."
+koth-usage-schedule-add: "&cUso: &f/koth schedule add <nombre> <HH:MM>"
+koth-schedule-invalid-format: "&cFormato invalido. Usa &fHH:MM"
+koth-scheduled: "&aKoth &f{koth} &aprogramado a las &f{hora}&a."
+koth-usage-start: "&cUso: &f/koth start <nombre>"
+koth-already-active: "&cYa hay un koth activo: &f{koth}"
+koth-finished: "&aKoth terminado."
+koth-not-active: "&cNo hay ningun koth activo."
+koth-tool-arena-name: "&6&lSeleccionador de Recinto &7[{koth}]"
+koth-tool-arena-lore1: "&7Click &aIzquierdo &7→ Punto 1"
+koth-tool-arena-lore2: "&7Click &cDerecho &7→ Punto 2"
+koth-tool-arena-lore3: "&7Shift + Click &7→ &aConfirmar y guardar"
+koth-tool-arena-given: "&aHacha de recinto entregada."
+koth-tool-capzone-name: "&b&lSeleccionador de Capzone &7[{koth}]"
+koth-tool-capzone-lore1: "&7Click &aIzquierdo &7→ Punto 1"
+koth-tool-capzone-lore2: "&7Click &cDerecho &7→ Punto 2"
+koth-tool-capzone-lore3: "&7Shift + Click &7→ &aConfirmar y guardar"
+koth-tool-capzone-given: "&aHacha de capzone entregada."
+
+# ─── Clanes ───────────────────────────────────────────────────────────────────
+clan-help:
+  - "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  - " &2&lComandos de Clan"
+  - "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  - " &f/clan create &7<nombre>"
+  - " &f/clan disband"
+  - " &f/clan invite &7<jugador>"
+  - " &f/clan join &7<clan|jugador>"
+  - " &f/clan kick &7<jugador>"
+  - " &f/clan leave"
+  - " &f/clan promote/demote &7<jugador>"
+  - " &f/clan leader &7<jugador>"
+  - " &f/clan sethome / home"
+  - " &f/clan ally &7<clan|jugador>"
+  - " &f/clan chat &7[ally]"
+  - " &f/clan deposit/withdraw &7<cantidad|all>"
+  - " &f/clan stats &7[clan]"
+  - " &f/clan info &7[clan|jugador]"
+  - " &f/clan top &7[puntos|asesinatos|muertes|dinero]"
+  - " &f/clan rally"
+  - " &f/clan list &7[pagina]"
+  - " &f/clan rename &7<nuevo-nombre>"
+  - "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+clan-not-found: "&cEse clan no existe."
+clan-clan-not-found: "&cEse clan no existe."
+clan-player-not-found: "&cNo se ha encontrado ningun jugador con ese nombre."
+clan-no-permission: "&cNo tienes permiso para hacer esto."
+clan-already-in-clan: "&cEse jugador ya pertenece a un clan."
+clan-no-clan: "&cNo perteneces a ningun clan."
+clan-player-no-clan: "&cEse jugador no pertenece a ningun clan."
+clan-create-success: "&aHas creado el clan &f{clan}&a!"
+clan-create-already-exists: "&cYa existe un clan con ese nombre."
+clan-create-already-have: "&cYa perteneces a un clan."
+clan-create-name-short: "&cEl nombre del clan debe tener al menos &f{min} &ccaracteres."
+clan-create-name-long: "&cEl nombre del clan no puede superar &f{max} &ccaracteres."
+clan-create-name-forbidden: "&cEse nombre de clan no esta permitido."
+clan-create-name-invalid: "&cEl nombre del clan solo puede contener letras, numeros y guiones bajos."
+clan-disband-confirm: "&cEscribe &f/clan disband &cde nuevo para confirmar la disolucion del clan."
+clan-disband-success: "&aEl clan &f{clan} &aha sido disuelto."
+clan-disband-leader-only: "&cSolo el lider puede disolver el clan."
+clan-invite-success: "&aHas invitado a &f{jugador} &aal clan."
+clan-invite-received: "&f{jugador} &ate ha invitado al clan &f{clan}&a. Haz click aqui para unirte."
+clan-invite-already-member: "&cEse jugador ya es miembro de tu clan."
+clan-invite-no-permission: "&cNecesitas ser oficial o superior para invitar."
+clan-invite-full: "&cEl clan esta lleno."
+clan-invite-expired: "&cTu invitacion al clan &f{clan} &cha expirado."
+clan-join-success: "&aTe has unido al clan &f{clan}&a!"
+clan-join-announcement: "&f{jugador} &ase ha unido al clan!"
+clan-join-no-invite: "&cNo tienes una invitacion pendiente de ese clan."
+clan-kick-success: "&aHas expulsado a &f{jugador} &adel clan."
+clan-kick-announcement: "&f{jugador} &cha sido expulsado del clan."
+clan-kick-no-permission: "&cNecesitas ser oficial o superior para expulsar."
+clan-kick-not-member: "&cEse jugador no es miembro de tu clan."
+clan-kick-higher-rank: "&cNo puedes expulsar a alguien con un rango igual o superior al tuyo."
+clan-kick-leader: "&cNo puedes expulsar al lider."
+clan-leave-success: "&aHas abandonado el clan."
+clan-leave-announcement: "&f{jugador} &eha abandonado el clan."
+clan-leave-leader: "&cEres el lider. Transfiere el liderazgo con &f/clan leader <jugador> &co disuelve el clan con &f/clan disband&c."
+clan-promote-success: "&aHas ascendido a &f{jugador} &aa &f{rango}&a."
+clan-promote-announcement: "&f{jugador} &eha sido ascendido a &f{rango}&e."
+clan-promote-max-rank: "&cEse jugador ya tiene el rango maximo posible."
+clan-promote-no-permission: "&cNecesitas ser colider o lider para ascender jugadores."
+clan-demote-success: "&aHas degradado a &f{jugador} &aa &f{rango}&a."
+clan-demote-announcement: "&f{jugador} &eha sido degradado a &f{rango}&e."
+clan-demote-min-rank: "&cEse jugador ya tiene el rango minimo."
+clan-demote-no-permission: "&cNecesitas ser colider o lider para degradar jugadores."
+clan-leader-success: "&aHas transferido el liderazgo a &f{jugador}&a."
+clan-leader-announcement: "&f{jugador} &ees el nuevo lider del clan."
+clan-leader-leader-only: "&cSolo el lider puede transferir el liderazgo."
+clan-leader-self: "&cNo puedes transferirte el liderazgo a ti mismo."
+clan-sethome-success: "&aHome del clan establecido."
+clan-sethome-no-permission: "&cNecesitas ser colider o lider para establecer el home."
+clan-home-success: "&aTeleportado al home del clan."
+clan-home-not-found: "&cEl clan no tiene un home establecido."
+clan-home-teleporting: "&7Teleportando al home del clan en &f{segundos}s&7..."
+clan-home-cancelled: "&cTeleporte cancelado por movimiento."
+clan-ally-request-sent: "&aHas enviado una solicitud de alianza al clan &f{clan}&a."
+clan-ally-request-received: "&eEl clan &f{clan} &equiere ser tu aliado. Usa &a/clan ally {clan} &epara aceptar."
+clan-ally-success: "&aAhora sois aliados con el clan &f{clan}&a!"
+clan-ally-announcement: "&eLos clanes &f{clan1} &ey &f{clan2} &eahora son aliados."
+clan-ally-already-allied: "&cYa sois aliados con ese clan."
+clan-ally-max: "&cHas alcanzado el maximo de aliados permitidos."
+clan-ally-self: "&cNo puedes aliarte contigo mismo."
+clan-ally-no-permission: "&cNecesitas ser colider o lider para gestionar alianzas."
+clan-unally-success: "&aYa no sois aliados con el clan &f{clan}&a."
+clan-unally-announcement: "&eLos clanes &f{clan1} &ey &f{clan2} &eya no son aliados."
+clan-unally-not-allied: "&cNo sois aliados con ese clan."
+clan-deposit-success: "&aHas depositado &f{cantidad} &aal banco del clan."
+clan-deposit-no-money: "&cNo tienes suficiente dinero."
+clan-deposit-no-permission: "&cNecesitas ser colider o lider para depositar dinero."
+clan-withdraw-success: "&aHas retirado &f{cantidad} &adel banco del clan."
+clan-withdraw-no-money: "&cEl clan no tiene suficiente dinero."
+clan-withdraw-no-permission: "&cNecesitas ser colider o lider para retirar dinero."
+clan-invalid-amount: "&cCantidad invalida."
+clan-amount-zero: "&cLa cantidad debe ser mayor que 0."
+clan-chat-clan-enabled: "&aChat de clan activado."
+clan-chat-clan-disabled: "&7Chat de clan desactivado."
+clan-chat-ally-enabled: "&aChat de aliados activado."
+clan-chat-ally-disabled: "&7Chat de aliados desactivado."
+clan-chat-staffmode-active: "&cNo puedes activar el chat de clan mientras tienes el &4StaffMode &cactivo."
+clan-rally-waypoint: "&aSe ha enviado un rally a los miembros del clan &7[ &f{x}&7, &f{y}&7, &f{z} &8- &f{mundo}&7 ]"
+clan-rally-chat: "&2[RALLY] &f{jugador} &7→ &7[ &f{x}&7, &f{y}&7, &f{z} &8- &f{mundo}&7 ]"
+clan-rename-announcement: "&aClan renombrado de &f{old} &aa &f{nuevo}&a."
+clan-list-empty: "&7No hay ningun clan con jugadores conectados."
+clan-list-no-more: "&cNo hay mas clanes en esa pagina."
+clan-list-header: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n &2&lClanes Conectados &8— &7Pagina {pagina}/{total}"
+clan-list-line: " &7{pos}. &2{clan} &8— &a{online}&7/{total} conectados"
+clan-list-more: " &7Usa &f/clan list {siguiente} &7para ver mas."
+clan-stats-header: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+clan-stats-title: " &2&l{clan}"
+clan-stats-kills: " &7Asesinatos: &a{kills}"
+clan-stats-deaths: " &7Muertes: &c{muertes}"
+clan-stats-money: " &7Banco: &f\${dinero}"
+clan-stats-footer: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+clan-info-header: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+clan-info-name: " &7Clan: &f{clan}"
+clan-info-home-yes: " &7Home: &aSi"
+clan-info-home-no: " &7Home: &cNo"
+clan-info-money: " &7Banco: &f\${dinero}"
+clan-info-leader: " &7Lider: {jugador}"
+clan-info-coleaders: " &7Colideres: {jugadores}"
+clan-info-officers: " &7Oficiales: {jugadores}"
+clan-info-members: " &7Miembros: {jugadores}"
+clan-info-footer: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+clan-info-list-empty: "&7Ninguno"
+clan-top-header: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+clan-top-title-points: " &6&lTop Clanes por Puntos"
+clan-top-title-kills: " &6&lTop Clanes por Asesinatos"
+clan-top-title-deaths: " &6&lTop Clanes por Muertes"
+clan-top-title-money: " &6&lTop Clanes por Dinero"
+clan-top-line: " &7{pos}. &f{clan} &8— &e{valor}"
+clan-top-empty: "&7No hay datos suficientes aun."
+clan-top-footer: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+clan-top-entry-name: "&f#{pos} &2{clan}"
+clan-top-hover-pos: "&6#&e{posicion} &2{clan}"
+clan-top-hover-kills: "&c⚔ Asesinatos: &f{valor}"
+clan-top-hover-deaths: "&7☠ Muertes: &f{valor}"
+clan-top-hover-money: "&6$ Banco: &f{valor}"
+clan-top-hover-points: "&e★ Puntos: &f{valor}"
+clan-top-menu-title: "&8✦ &2&lCLAN TOP &8✦"
+clan-top-icon-points-name: "&e&l★ Top Puntos"
+clan-top-icon-points-lore:
+  - ""
+  - "&7Clanes con mas &epuntos&7."
+  - ""
+  - "&e▶ Click para ver"
+  - ""
+clan-top-icon-kills-name: "&c&l⚔ Top Asesinatos"
+clan-top-icon-kills-lore:
+  - ""
+  - "&7Clanes con mas &cbajas&7."
+  - ""
+  - "&e▶ Click para ver"
+  - ""
+clan-top-icon-deaths-name: "&7&l☠ Top Muertes"
+clan-top-icon-deaths-lore:
+  - ""
+  - "&7Clanes con mas &7muertes&7."
+  - ""
+  - "&e▶ Click para ver"
+  - ""
+clan-top-icon-money-name: "&6&l$ Top Dinero"
+clan-top-icon-money-lore:
+  - ""
+  - "&7Clanes con mas &6dinero&7."
+  - ""
+  - "&e▶ Click para ver"
+  - ""
+clan-top-detail-title-points: "&8✦ &e&lTOP PUNTOS &8✦"
+clan-top-detail-title-kills: "&8✦ &c&lTOP KILLS &8✦"
+clan-top-detail-title-deaths: "&8✦ &7&lTOP MUERTES &8✦"
+clan-top-detail-title-money: "&8✦ &6&lTOP DINERO &8✦"
+clan-usage-create: "&cUso: &f/clan create <nombre>"
+clan-usage-invite: "&cUso: &f/clan invite <jugador>"
+clan-usage-join: "&cUso: &f/clan join <clan|jugador>"
+clan-usage-kick: "&cUso: &f/clan kick <jugador>"
+clan-usage-promote: "&cUso: &f/clan promote <jugador>"
+clan-usage-demote: "&cUso: &f/clan demote <jugador>"
+clan-usage-leader: "&cUso: &f/clan leader <jugador>"
+clan-usage-ally: "&cUso: &f/clan ally <clan|jugador>"
+clan-usage-unally: "&cUso: &f/clan unally <clan|jugador>"
+clan-usage-deposit: "&cUso: &f/clan deposit <cantidad|all>"
+clan-usage-withdraw: "&cUso: &f/clan withdraw <cantidad|all>"
+
+# ─── Leaderboards ─────────────────────────────────────────────────────────────
+lb-header: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+lb-footer: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+lb-kills-title: " &c&l☠ Top Asesinatos"
+lb-deaths-title: " &7&l✝ Top Muertes"
+lb-playtime-title: " &b&l⏱ Top Tiempo Jugado"
+lb-line: " &7{pos}. &f{jugador} &8— &e{valor}"
+lb-playtime-line: " &7{pos}. &f{jugador} &8— &b{valor}"
+lb-empty: " &7No hay datos suficientes aún."
+lb-disabled: "&cEse leaderboard no está activado."
+lb-help-header: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+lb-help-title: " &6&lLeaderboards disponibles"
+lb-help-kills: " &f/leaderboards asesinatos &7— Top asesinatos"
+lb-help-deaths: " &f/leaderboards muertes &7— Top muertes"
+lb-help-playtime: " &f/leaderboards playtime &7— Top tiempo jugado"
+lb-entry-name: "&f#{pos} &e{jugador}"
+lb-top-title-kills: "&0&l⚔ Top Asesinatos"
+lb-top-title-deaths: "&0&l☠ Top Muertes"
+lb-top-title-playtime: "&0&l⏱ Top Tiempo Jugado"
+lb-hover-sep: "&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+lb-hover-position: "&6#&e{posicion} &f{jugador}"
+lb-hover-kills: "&c⚔ Asesinatos: &e{valor}"
+lb-hover-deaths: "&7☠ Muertes: &e{valor}"
+lb-hover-playtime: "&b⏱ Tiempo jugado: &e{valor}"
+lb-menu-title: "&8✦ &6&lLEADERBOARDS &8✦"
+lb-icon-kills-name: "&c&l⚔ Top Asesinatos"
+lb-icon-kills-lore:
+  - ""
+  - "&7Consulta los jugadores"
+  - "&7con mas &casesinatos&7."
+  - ""
+  - "&e▶ Click para ver"
+  - ""
+lb-icon-deaths-name: "&7&l☠ Top Muertes"
+lb-icon-deaths-lore:
+  - ""
+  - "&7Consulta los jugadores"
+  - "&7con mas &7muertes&7."
+  - ""
+  - "&e▶ Click para ver"
+  - ""
+lb-icon-playtime-name: "&b&l⏱ Top Tiempo Jugado"
+lb-icon-playtime-lore:
+  - ""
+  - "&7Consulta los jugadores"
+  - "&7con mas &btiempo jugado&7."
+  - ""
+  - "&e▶ Click para ver"
+  - ""
+
+# ─── Estadísticas ─────────────────────────────────────────────────────────────
+stats-header: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+stats-footer: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+stats-title: " &f&l{jugador}"
+stats-kills: " &7⚔ Asesinatos: &c{valor}"
+stats-deaths: " &7☠ Muertes: &c{valor}"
+stats-playtime: " &7⏱ Tiempo jugado: &b{valor}"
+stats-money: " &7💰 Dinero: &a{valor}$"
+playtime-message: "&f{jugador} &7ha jugado &f{tiempo}&7."
+
+# ─── Staff Mode ───────────────────────────────────────────────────────────────
+staffmode-enabled: "&8[&4Staff&8] &cModo Staff &aactivado&c."
+staffmode-disabled: "&8[&4Staff&8] &cModo Staff &cdesactivado&c."
+vanish-enabled: "&8[&4Staff&8] &aAhora eres invisible."
+vanish-disabled: "&8[&4Staff&8] &cYa no eres invisible."
+staffchat-enabled: "&8[&4Staff&8] &aStaffChat &aactivado. Tus mensajes solo los veran los staffs."
+staffchat-disabled: "&8[&4Staff&8] &cStaffChat &cdesactivado."
+staffchat-format: "&8[&4StaffChat&8] &c{prefijo}{jugador}&8: &f{mensaje}"
+freeze-player-line1: "&cHas sido congelado por un administrador."
+freeze-player-line2: "&aVen a &6{discord} &ao seras &cbaneado permanentemente&a, tienes &c{tiempo} &cminutos."
+freeze-staff-notice: "&8[&4Staff&8] &f{jugador} &cha sido congelado."
+freeze-unfrozen-staff: "&8[&4Staff&8] &f{jugador} &aha sido descongelado."
+freeze-disconnected-ban: "&8[&4Staff&8] &f{jugador} &cse desconecto estando congelado."
+freeze-already-frozen: "&cEse jugador ya esta congelado."
+freeze-not-frozen: "&cEse jugador no esta congelado."
+freeze-blocked: "&cEstas congelado. Solo puedes usar /msg, /r y /tell."
+freeze-countdown: "&cCongelado &8— &fTiempo restante: &c{tiempo}"
+freeze-self: "&cNo puedes congelarte a ti mismo."
+freeze-usage: "&cUso: &f/{label} <jugador>"
+freeze-usage-unfreeze: "&cUso: &f/{label} unfreeze <jugador>"
+xray-header: "&8&m                    \n &b&lJugadores bajo Y={capa}:\n&8&m                    "
+xray-empty: "&8[&4Staff&8] &7No hay jugadores por debajo de la capa &b{capa}&7."
+xray-line: " &f{jugador} &8— &7{mundo} &8(&e{x}&8, &e{y}&8, &e{z}&8) &8— &aClan: &f{clan}"
+staff-xray-name: "&6&lDetector de Xray"
+staff-xray-lore:
+  - "&7Click para ver jugadores"
+  - "&7por debajo de la capa &b{capa}"
+staff-inspect-name: "&6&lInspeccionar Jugador"
+staff-inspect-lore:
+  - "&7Click en un jugador para"
+  - "&7ver su inventario completo"
+staff-compass-name: "&fBrujula"
+staff-compass-lore: []
+staff-freeze-name: "&6&lCongelar Jugador"
+staff-freeze-lore:
+  - "&7Click en un jugador para"
+  - "&7congelarlo e interrogarlo"
+staff-vanish-name-on: "&a&lVanish &a[ON]"
+staff-vanish-lore-on:
+  - "&7Click para desactivar el vanish"
+staff-vanish-name-off: "&7&lVanish &c[OFF]"
+staff-vanish-lore-off:
+  - "&7Click para activar el vanish"
+
+# ─── Inspect ──────────────────────────────────────────────────────────────────
+inspect-title: "&8Inventario de &f{jugador}"
+inspect-player-name: "&f&l{jugador}"
+inspect-teleported: "&aTeletransportado a &f{jugador}&a."
+inspect-health: "&7Vida: &a{v}&8/&a{max}"
+inspect-hunger: "&7Hambre: &e{h}&8/&e20"
+inspect-saturation: "&7Saturacion: &6{s}"
+inspect-xp: "&7XP Total: &b{xp} &8(Nivel &b{nivel}&8)"
+inspect-ping: "&7Ping: &f{ping}ms"
+inspect-section-location: "&e&lUbicacion"
+inspect-world: "&7Mundo: &f{mundo}"
+inspect-coords: "&7X: &f{x} &7Y: &f{y} &7Z: &f{z}"
+inspect-direction: "&7Direccion: &f{dir}"
+inspect-gamemode: "&7GameMode: &f{gm}"
+inspect-flying: "&7Volando: &f{v}"
+inspect-op: "&7OP: &f{op}"
+inspect-section-clan: "&6&lClan"
+inspect-clan: "&7Clan: &a{clan}"
+inspect-section-combat: "&c&lCombate"
+inspect-kills: "&7Kills: &c{v}"
+inspect-deaths: "&7Muertes: &c{v}"
+inspect-mob-kills: "&7Mobs matados: &6{v}"
+inspect-damage: "&7Dano recibido: &e{v}"
+inspect-section-effects: "&d&lEfectos Activos"
+inspect-no-effects: "&7Ningun efecto activo"
+inspect-effect-level: "Nv."
+inspect-xray-world: "&7Mundo: &f{mundo}"
+inspect-xray-coords: "&7X: &f{x} &7Y: &f{y} &7Z: &f{z}"
+inspect-xray-clan: "&7Clan: &a{clan}"
+inspect-xray-click: "&eClick para teletransportarte"
+
+# ─── Lista de jugadores ───────────────────────────────────────────────────────
+list-header: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+list-online: " &7Conectados: &a{online}&8/&7{max}"
+list-group-staff: " &c&lSTAFF &8(&c{cantidad}&8)"
+list-group-vip: " &6&lVIP &8(&6{cantidad}&8)"
+list-group-players: " &f&lJUGADORES &8(&f{cantidad}&8)"
+list-player-staff: "  &c{prefijo} &f{nombre}"
+list-player-vip: "  &6{prefijo} &f{nombre}"
+list-player-normal: "  &7{nombre}"
+list-footer: "&8&m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# ─── Seen / IP / Alts / UUID ──────────────────────────────────────────────────
+seen-usage-seen: "&cUso: /seen <jugador>"
+seen-usage-ip: "&cUso: /ip <jugador>"
+seen-usage-alts: "&cUso: /alts <jugador>"
+seen-usage-uuid: "&cUso: /uuid <jugador>"
+seen-no-data: "&cNo se encontraron datos de ese jugador."
+seen-unknown: "&7Desconocida"
+seen-active: "&aActivo ahora"
+seen-never: "&7Nunca"
+seen-no-alts: "&7Ninguna"
+seen-separator: "&8&m────────────────────────"
+seen-title: "&6&l{jugador}"
+seen-uuid-line: " &7UUID:   &f{uuid}"
+seen-ip-line: " &7IP:     &f{ip}"
+seen-seen-line: " &7Visto:  {visto}"
+seen-alts-line: " &7Alts:   {alts}"
+ip-result: "&6{jugador} &7→ IP: &f{ip}"
+alts-none: "&6{jugador} &7no tiene alts conocidas."
+alts-result: "&6{jugador} &7alts: &f{alts}"
+uuid-result: "&6{jugador} &7→ UUID: &f{uuid}"
+
+# ─── Protecciones ─────────────────────────────────────────────────────────────
+ps-disabled: "&cLas protecciones están desactivadas."
+ps-type-not-found: "&cEse tipo de protección no existe."
+ps-overlap: "&cHay otra protección demasiado cerca."
+ps-placed: "&aProtección &f{tipo} &acolocada correctamente."
+ps-picked-up: "&aProtección &f{tipo} &arecogida."
+ps-not-yours: "&cEsta protección no es tuya."
+ps-not-in-zone: "&cNo estás dentro de ninguna protección."
+ps-no-build-permission: "&cNo tienes permiso para construir aquí."
+ps-no-protections: "&cNo tienes protecciones."
+ps-not-found: "&cProtección no encontrada."
+ps-no-money: "&cNo tienes suficiente dinero. Necesitas &f{precio}."
+ps-get-ok: "&aHas obtenido la protección &f{tipo}&a."
+ps-give-ok: "&aDada protección &f{tipo} &aa &f{jugador}&a."
+ps-give-received: "&aHas recibido una protección &f{tipo}&a."
+ps-pvp-disabled: "&cEl PVP está desactivado en esta protección."
+ps-pearl-blocked: "&cNo puedes usar perlas de ender aquí."
+ps-entering: "&7[&6PS&7] &eEntraste en la protección de &f{dueno}&e."
+ps-leaving: "&7[&6PS&7] &eSaliste de &f{tipo}&e."
+ps-locked: "&cEsta protección está bloqueada."
+ps-locked-ok: "&aProtección bloqueada. Nadie puede entrar."
+ps-unlocked-ok: "&aProtección desbloqueada."
+ps-no-kill-mobs: "&cNo puedes matar mobs en esta protección."
+ps-no-interact: "&cNo puedes interactuar con esto aquí."
+ps-no-enter-combat: "&cNo puedes entrar en combate a una zona sin PVP."
+ps-expelled: "&cHas sido expulsado de una protección bloqueada."
+ps-limit-reached: "&cHas alcanzado el límite de &f{max} &cprotecciones."
+ps-home-header: "&8&m───────────────&r &6&lTus Protecciones &8&m───────────────"
+ps-home-row: " &8[&a➤&8] &f{tipo} &8@ &7{world} {x},{z}"
+ps-home-hover: "&7Click para ir a esta protección"
+ps-home-footer: "&8&m──────────────────────────────────"
+ps-home-cooldown: "&cEspera &f{tiempo}s&c para usar /ps home de nuevo."
+ps-home-ok: "&aTeletransportado a tu protección."
+ps-home-teleporting: "&7Teletransportando en &f{segundos}s&7... (no te muevas)"
+ps-viewhome-header: "&8&m───&r &6Protecciones de &f{jugador} &8&m───"
+ps-player-no-protections: "&cEse jugador no tiene protecciones."
+ps-info-type: "&6Tipo: &f{v}"
+ps-info-owner: "&6Owner: &f{v}"
+ps-info-radius: "&6Radio: &f{v} bloques"
+ps-info-members: "&6Miembros: &f{v}"
+ps-info-coowners: "Co-owners"
+ps-info-flags: "&6Flags"
+ps-info-locked: "Bloqueada"
+ps-view-enabled: "&aVisualizando protecciones con partículas."
+ps-view-disabled: "&7Visualización desactivada."
+ps-list-header: "&8&m───────────────&r &6&lTus Protecciones &8&m───────────────"
+ps-list-row: " &8• &f{tipo} &8@ &7{world} ({x}, {z})"
+ps-list-footer: "&8&m──────────────────────────────────"
+ps-member-added: "&aJugador &f{j} &aañadido."
+ps-member-removed: "&aJugador &f{j} &aeliminado."
+ps-owner-added: "&aOwner &f{j} &aañadido."
+ps-owner-removed: "&aOwner &f{j} &aeliminado."
+ps-flag-header: "&8&m───────────────&r &6&lFLAGS &8&m───────────────"
+ps-flag-row: " {color}[{estado}] &f{flag}"
+ps-flag-hover: "&7Click para activar/desactivar"
+ps-flag-footer: "&8&m──────────────────────────────────"
+ps-flag-updated: "&aFlag &f{flag} &aactualizada."
+ps-flag-invalid: "&cFlag desconocida."
+ps-sethome-ok: "&aHome de la protección fijado."
+ps-merge-ok: "&aProtecciones unidas."
+ps-merge-not-adjacent: "&cNo hay protección adyacente para unir."
+ps-hidden: "&aBloque de protección ocultado."
+ps-unhidden: "&aBloque de protección mostrado."
+ps-setowner-ok: "&aOwner cambiado a &f{j}&a."
+ps-none: "Ninguno"
+ps-usage-get: "&cUso: /ps get <tipo>"
+ps-usage-give: "&cUso: /ps give <tipo> <jugador>"
+ps-usage-viewhome: "&cUso: /ps viewhome <jugador>"
+ps-usage-add: "&cUso: /ps add/remove <jugador>"
+ps-usage-owner: "&cUso: /ps addowner/removeowner <jugador>"
+ps-usage-setowner: "&cUso: /ps setowner <jugador>"
+ps-help-title: "&6&l/ps &8— Protecciones"
+ps-help-get: "Obtener protección"
+ps-help-give: "Dar a jugador"
+ps-help-home: "Ir a tus protecciones"
+ps-help-viewhome: "Ver ps de jugador"
+ps-help-info: "Info de la zona actual"
+ps-help-view: "Borde con partículas"
+ps-help-list: "Listar tus protecciones"
+ps-help-add: "Miembros"
+ps-help-addowner: "Co-owners"
+ps-help-flag: "Ver/cambiar flags"
+ps-help-sethome: "Fijar home aquí"
+ps-help-merge: "Unir protecciones"
+ps-help-hide: "Ocultar/mostrar bloque"
+ps-help-setowner: "Cambiar owner"
+ps-help-lock: "Bloquear/desbloquear entrada"
+
+# ─── ClearLag ─────────────────────────────────────────────────────────────────
+clearlag-warning: "&6[ClearLag] &eLimpieza en &f{segundos} &esegundos."
+clearlag-items-only: "&6[ClearLag] &eSe han eliminado &f{items} &eitems del suelo."
+clearlag-mobs-only: "&6[ClearLag] &eSe han eliminado &f{mobs} &emobs del mundo."
+clearlag-items-and-mobs: "&6[ClearLag] &eSe han eliminado &f{items} &eitems y &f{mobs} &emobs del mundo."
+
+# ─── Comandos de utilidad ─────────────────────────────────────────────────────
+anvil-opened: "&7Yunque virtual abierto."
+craft-opened: "&7Mesa de crafteo virtual abierta."
+enderchest-opened: "&7Ender chest virtual abierta."
+skull-usage: "&cUso correcto: &f/skull <jugador>&c."
+skull-given: "&7Cabeza de &f{jugador} &7añadida a tu inventario."
+condense-done: "&7Materiales condensados en bloques."
+condense-nothing: "&cNo tienes materiales condensables en el inventario."
+ci-done: "&7Inventario limpiado."
+ci-other: "&aInventario de &f{jugador} &alimpiado."
+near-header: "&8&m                    &r &7Jugadores en radio &f{radio} &8&m                    "
+near-player: "  &7▶ &f{jugador} &8— &7{distancia} bloques"
+near-nobody: "&7No hay jugadores en un radio de &f{radio} &7bloques."
+fly-enabled: "&aVuelo activado."
+fly-disabled: "&cVuelo desactivado."
+feed-done: "&7Hambre restaurada."
+feed-other: "&aHas alimentado a &f{jugador}&a."
+feed-cooldown: "&cDebes esperar &f{segundos}s &cpara usar esto de nuevo."
+heal-done: "&aVida y hambre restauradas al maximo."
+heal-other: "&aHas curado a &f{jugador}&a."
+hat-worn: "&7Te has puesto &f{item} &7en la cabeza."
+hat-no-item: "&cNecesitas un item en la mano."
+invsee-usage: "&cUso correcto: &f/invsee <jugador>&c."
+invsee-opened: "&7Viendo el inventario de &f{jugador}&7."
+invsee-cooldown: "&cDebes esperar &f{segundos}s &cpara usar esto de nuevo."
+invsee-self: "&cNo puedes ver tu propio inventario."
+repair-done: "&aItem reparado."
+repair-no-item: "&cNecesitas un item en la mano."
+repair-not-repairable: "&cEste item no se puede reparar."
+repair-all-done: "&aInventario reparado completamente."
+repair-all-nothing: "No tienes ningun item que reparar."
+repair-all-cooldown: "&cDebes esperar &f{segundos}s &cpara usar esto de nuevo."
+rename-usage: "&cUso correcto: &f/rename <nombre>&c."
+rename-no-item: "&cNecesitas un item en la mano."
+rename-done: "&aItem renombrado a &r{nombre}&a."
+spawner-usage: "&cUso correcto: &f/spawner <mob>&c."
+spawner-given: "&aSpawner de &f{tipo} &aañadido a tu inventario."
+spawner-invalid-mob: "&cEl mob &f{mob} &cno existe. Ejemplo: &f/spawner cow&c."
+spawner-silk-no-permission: "&cNo tienes permiso para picar spawners con seda."
+spawner-silk-obtained: "&aHas obtenido un spawner de &f{tipo}&a."
+scoreboard-enabled: "&aScoreboard activada."
+scoreboard-disabled: "&cScoreboard desactivada."
+limit-hoppers: "&cHas alcanzado el limite de &f{maximo} &choppers por chunk."
+limit-spawners: "&cHas alcanzado el limite de &f{maximo} &cspawners por chunk."
+slots-changed: "&7Slots del servidor cambiados a &f{slots}&7."
+slots-admin-notice: "&8[&cAdmin&8] &7Los slots han sido cambiados a &f{slots} &7por &f{jugador}&7."
+slots-usage: "&cUso correcto: &f/slots <cantidad>&c."
+slots-invalid: "&cLa cantidad debe ser un numero valido mayor que 0."
+find-result: "&f{jugador} &7se encuentra en &f{mundo}&7."
+ping-self: "&7Tu ping es: &f{ping}ms&7."
+ping-other: "&7El ping de &f{jugador} &7es: &f{ping}ms&7."
+reload-done: "&aPlugin recargado correctamente."
+
+# ─── Menús ────────────────────────────────────────────────────────────────────
+menu-button-back: "&e← Volver"
+menu-button-close: "&c&l✖ Cerrar"`
+};
+
+/* ── INJECT & HIGHLIGHT ── */
+Object.entries(CONFIGS).forEach(([key, text]) => {
+  const el = document.getElementById('code-' + key);
+  if (el) el.innerHTML = highlightYaml(text);
+});
+</script>
+</body>
+</html>
