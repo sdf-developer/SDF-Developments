@@ -55,9 +55,7 @@ nav{
 .nav-link:hover{color:var(--tb);background:rgba(255,255,255,.05)}
 .nav-link.active{color:var(--o);border-color:var(--bo);background:rgba(240,106,0,.07)}
 .nav-right{display:flex;align-items:center;gap:6px;margin-left:auto}
-.lang-btn{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:5px 9px;background:transparent;border:1px solid var(--b);color:var(--t);border-radius:2px;cursor:pointer!important;transition:all .2s}
-.lang-btn:hover{border-color:var(--bo);color:var(--o)}
-.lang-btn.active{background:var(--o);border-color:var(--o);color:#fff}
+
 
 /* ── HERO ── */
 .hero{
@@ -101,14 +99,7 @@ nav{
 }
 .hero-sub strong{color:var(--tb);font-weight:500}
 
-.hero-ctas{
-  display:flex;align-items:center;gap:12px;position:relative;
-  opacity:0;animation:up .8s .27s cubic-bezier(.16,1,.3,1) forwards;
-}
-.cta-p{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;background:var(--o);color:#fff;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:3px;transition:background .2s,transform .15s,box-shadow .2s;cursor:pointer!important;box-shadow:0 0 24px rgba(240,106,0,.25)}
-.cta-p:hover{background:#d45f00;transform:translateY(-2px);box-shadow:0 6px 28px rgba(240,106,0,.4)}
-.cta-s{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border:1px solid var(--b);color:var(--tm);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:3px;transition:all .2s;cursor:pointer!important}
-.cta-s:hover{border-color:var(--bo);color:var(--o);background:rgba(240,106,0,.06)}
+
 
 .hero-stats{
   display:flex;gap:0;margin-top:56px;border:1px solid var(--b);position:relative;
@@ -235,11 +226,7 @@ footer{margin-top:40px;padding:18px 40px;border-top:1px solid var(--b);display:f
     <a class="nav-link" href="reviews.html" data-i18n="nav_reviews">Reviews</a>
     <a class="nav-link" href="terms.html" data-i18n="nav_terms">Terms</a>
   </div>
-  <div class="nav-right">
-    <button class="lang-btn active" data-lang="en">EN</button>
-    <button class="lang-btn" data-lang="es">ES</button>
-    <button class="lang-btn" data-lang="fr">FR</button>
-  </div>
+
 </nav>
 
 <!-- HERO -->
@@ -257,10 +244,7 @@ footer{margin-top:40px;padding:18px 40px;border-top:1px solid var(--b);display:f
   <p class="hero-sub" data-i18n-html="masthead_desc">
     Hand-crafted plugins built for performance, <strong>deeply configurable</strong> and actively maintained. One plugin to replace many.
   </p>
-  <div class="hero-ctas">
-    <a class="cta-p" href="index.html" data-i18n="band_cta">View Plugin →</a>
-    <a class="cta-s" href="contact.html" data-i18n="nav_contact">Contact</a>
-  </div>
+
   <div class="hero-stats">
     <div class="hstat"><div class="hstat-n">1</div><div class="hstat-l" data-i18n="mstat_plugin">Plugin</div></div>
     <div class="hstat"><div class="hstat-n">16+</div><div class="hstat-l" data-i18n="mstat_systems">Systems</div></div>
@@ -318,10 +302,6 @@ footer{margin-top:40px;padding:18px 40px;border-top:1px solid var(--b);display:f
         </div>
         <div class="feat-btns">
           <span class="fb s" data-i18n="card_view">View Details</span>
-          <span class="fb p">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span data-i18n="card_buy">Get Now</span>
-          </span>
         </div>
       </div>
     </div>
