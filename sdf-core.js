@@ -1853,7 +1853,7 @@ function applyLang(lang) {
   //    that can't easily have data-i18n (e.g. mixed HTML titles)
   const page = (location.pathname.split('/').pop() || 'index.html').split('?')[0];
 
-  if (page === 'index.html' || page === '') {
+  if (page === 'sdfcore.html' || page === 'sdfcore') {
     setText('eyebrow-index-text', T.eyebrow_index);
     setHTML('tagline-index', T.tagline_index);
     setText('stat-features-label', T.stat_features);
