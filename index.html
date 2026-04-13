@@ -115,29 +115,25 @@ body.modal-open {
 ══════════════════════════════════ */
 .header {
   position: relative;
-  padding: 70px 48px 0;
-  text-align: center;
+  padding: 60px 48px 0;
   overflow: hidden;
   z-index: 1;
 }
 
 /* ── HERO TOP ROW: logo a la izquierda, precio/botón a la derecha ── */
-.hero-top-row {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-bottom: 36px;
-  text-align: left;
-  opacity: 0;
-  animation: fadeUp .8s .05s cubic-bezier(0.16,1,0.3,1) forwards;
-}
+.hero-top-row { display: none; }
 .hero-logo {
-  width: 88px;
-  height: 88px;
-  border-radius: 18px;
-  border: 2px solid rgba(240,106,0,0.5);
-  box-shadow: 0 0 40px rgba(240,106,0,0.25), 0 8px 32px rgba(0,0,0,0.6);
+  width: 80px;
+  height: 80px;
+  border-radius: 14px;
+  border: 2px solid rgba(240,106,0,0.55);
+  box-shadow: 0 0 40px rgba(240,106,0,0.28), 0 8px 24px rgba(0,0,0,0.6);
   flex-shrink: 0;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.hero-logo:hover {
+  box-shadow: 0 0 56px rgba(240,106,0,0.45), 0 8px 28px rgba(0,0,0,0.75);
+  transform: scale(1.04);
 }
 .hero-logo-info {
   display: flex;
@@ -146,26 +142,23 @@ body.modal-open {
 }
 .hero-logo-name {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  letter-spacing: 5px;
+  font-size: 16px;
+  letter-spacing: 4px;
   color: var(--white);
   line-height: 1;
+  white-space: nowrap;
 }
 .hero-logo-name .accent { color: var(--orange); }
-.hero-price-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
+.hero-price-row { display: none; } /* replaced by hero-left */
 .price-badge {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: rgba(240,106,0,0.08);
-  border: 1px solid rgba(240,106,0,0.35);
+  background: rgba(240,106,0,0.10);
+  border: 1px solid rgba(240,106,0,0.45);
   border-radius: 4px;
-  padding: 7px 16px;
+  padding: 8px 18px;
+  box-shadow: 0 0 18px rgba(240,106,0,0.12);
 }
 .price-label {
   font-family: 'Space Mono', monospace;
@@ -176,11 +169,11 @@ body.modal-open {
 }
 .price-amount {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
+  font-size: 32px;
   color: #22c55e;
   letter-spacing: 2px;
   line-height: 1;
-  text-shadow: 0 0 20px rgba(34,197,94,0.35);
+  text-shadow: 0 0 24px rgba(34,197,94,0.45);
 }
 .btn-buy-hero {
   display: inline-flex;
@@ -192,14 +185,15 @@ body.modal-open {
   font-size: 9px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  padding: 11px 20px;
+  padding: 12px 22px;
   border-radius: 4px;
   border: none;
   cursor: pointer !important;
   text-decoration: none;
-  transition: background .2s, transform .15s;
+  transition: background .2s, transform .15s, box-shadow .2s;
+  box-shadow: 0 0 20px rgba(240,106,0,0.3);
 }
-.btn-buy-hero:hover { background: #d45f00; transform: translateY(-1px); }
+.btn-buy-hero:hover { background: #d45f00; transform: translateY(-2px); box-shadow: 0 4px 28px rgba(240,106,0,0.45); }
 .btn-buy-hero svg { width: 13px; height: 13px; }
 
 .header-eyebrow {
@@ -219,8 +213,8 @@ body.modal-open {
 .eyebrow-line {
   flex: 1; height: 1px; max-width: 60px;
 }
-.eyebrow-line:first-child { background: linear-gradient(90deg, transparent, var(--border-o)); }
-.eyebrow-line:last-child  { background: linear-gradient(270deg, transparent, var(--border-o)); }
+.eyebrow-line:first-child { background: linear-gradient(90deg, var(--orange), var(--border-o)); }
+.eyebrow-line:last-child  { background: linear-gradient(270deg, transparent, var(--border-o)); max-width: 120px; }
 
 .eyebrow-text {
   font-family: 'Space Mono', monospace;
@@ -271,7 +265,36 @@ body.modal-open {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── STATS ROW ── */
+/* ── HERO LAYOUT ── */
+.hero-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin-bottom: 40px;
+}
+
+/* LEFT CARD: logo + name + price + button */
+.hero-left {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px 28px 20px 0;
+  border-right: 1px solid rgba(240,106,0,0.2);
+  margin-right: 36px;
+  min-width: 180px;
+  opacity: 0;
+  animation: fadeUp .8s .05s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+
+/* CENTER: eyebrow + big title + tagline */
+.hero-center {
+  flex: 1;
+  text-align: center;
+}
+
+/* ── STATS ROW ── *//* ── STATS ROW ── */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1647,37 +1670,37 @@ body.modal-open {
 
   <!-- HEADER -->
   <div class="header">
-    <!-- Fila superior: logo izquierda + precio/botón -->
-    <div class="hero-top-row">
-      <img src="favicon.png" alt="SDF Survival Core" class="hero-logo">
-      <div class="hero-logo-info">
+    <!-- Layout: price card a la izquierda, título centrado en el resto -->
+    <div class="hero-layout">
+      <!-- LEFT: logo + precio + botón -->
+      <div class="hero-left">
+        <img src="favicon.png" alt="SDF Survival Core" class="hero-logo">
         <div class="hero-logo-name"><span class="accent">SDF</span> SURVIVAL CORE</div>
-        <div class="hero-price-row">
-          <div class="price-badge">
-            <div class="price-label" data-i18n="price_label_hero">Launch price</div>
-            <div class="price-amount">$19.99</div>
-          </div>
-          <a class="btn-buy-hero" href="buy.html">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span data-i18n="btn_get_hero">Get SDF Core</span>
-          </a>
+        <div class="price-badge">
+          <div class="price-label" data-i18n="price_label_hero">Launch price</div>
+          <div class="price-amount">$19.99</div>
         </div>
+        <a class="btn-buy-hero" href="buy.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span data-i18n="btn_get_hero">Get SDF Core</span>
+        </a>
+      </div>
+      <!-- CENTER: título + tagline -->
+      <div class="hero-center">
+        <div class="header-eyebrow">
+          <div class="eyebrow-line"></div>
+          <div class="eyebrow-text" data-i18n="eyebrow_index">Minecraft Plugin · Survival 1.21 · All-in-One</div>
+          <div class="eyebrow-line"></div>
+        </div>
+        <div class="main-title">
+          <span class="accent">SDF</span> SURVIVAL<span class="sub">CORE</span>
+        </div>
+        <p class="tagline" data-i18n-html="tagline_index">
+          A <strong>lightweight, modular and fully integrated</strong> plugin designed for modern Survival servers —
+          delivering performance, stability and a professional experience without relying on multiple external plugins.
+        </p>
       </div>
     </div>
-
-    <!-- Título centrado -->
-    <div class="header-eyebrow">
-      <div class="eyebrow-line"></div>
-      <div class="eyebrow-text" data-i18n="eyebrow_index">Minecraft Plugin · Survival 1.21 · All-in-One</div>
-      <div class="eyebrow-line"></div>
-    </div>
-    <div class="main-title">
-      <span class="accent">SDF</span> SURVIVAL<span class="sub">CORE</span>
-    </div>
-    <p class="tagline" data-i18n-html="tagline_index">
-      A <strong>lightweight, modular and fully integrated</strong> plugin designed for modern Survival servers —
-      delivering performance, stability and a professional experience without relying on multiple external plugins.
-    </p>
 
     <div class="stats-row">
       <div class="stat">
