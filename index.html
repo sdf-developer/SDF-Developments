@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SDF Survival Core</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<script src="sdf-core.js" defer></script>
+<script src="sdf-core.js?v=202604131138" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1536,6 +1536,10 @@ body.modal-open {
 </head>
 <body>
 
+<script>
+// Clear any cached popup state
+try { localStorage.removeItem('sdf_popup_shown'); localStorage.removeItem('sdf_cs_shown'); } catch(e){}
+</script>
 <!-- Custom cursor -->
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
