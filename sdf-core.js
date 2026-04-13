@@ -603,6 +603,15 @@ const TRANSLATIONS = {
     spec_database:   'Database',
     spec_license:    'License',
     soon_text:       'Coming Soon',
+    sys_protections_name: 'Protections',
+    sys_protections_desc: 'Land claim system with flags and member management.',
+    sys_modal_protections_badge: 'Land Claim System',
+    sys_modal_protections_desc: 'A complete <strong>land protection system</strong> that lets players claim areas, manage member access, toggle zone flags and protect their builds from griefing.',
+    sys_modal_protections_f1: 'Place protection blocks to claim land',
+    sys_modal_protections_f2: 'Add/remove members and co-owners per zone',
+    sys_modal_protections_f3: 'Configurable flags: PvP, explosions, mob kills, entry lock',
+    sys_modal_protections_f4: 'Staff admin tools: give, viewhome, setowner',
+    sys_modal_protections_f5: 'Particle border visualization',
     cfg_badge_messages:    'English Messages',
     cfg_copy:              'Copy',
     cfg_copied:            'Copied',
@@ -1184,6 +1193,15 @@ const TRANSLATIONS = {
     feat_paper_api:  'Paper API',
     feat_spawn_shield: 'Escudo de Spawn',
     terms_s1_title:  '1. Licencia',
+    sys_protections_name: 'Protecciones',
+    sys_protections_desc: 'Sistema de reclamación de terrenos con banderas y gestión de miembros.',
+    sys_modal_protections_badge: 'Sistema de Reclamación',
+    sys_modal_protections_desc: 'Un completo <strong>sistema de protección de terrenos</strong> que permite a los jugadores reclamar áreas, gestionar el acceso de miembros, activar banderas de zona y proteger sus construcciones.',
+    sys_modal_protections_f1: 'Coloca bloques de protección para reclamar terreno',
+    sys_modal_protections_f2: 'Añade/elimina miembros y co-propietarios por zona',
+    sys_modal_protections_f3: 'Banderas configurables: PvP, explosiones, mobs, bloqueo de entrada',
+    sys_modal_protections_f4: 'Herramientas de administrador: give, viewhome, setowner',
+    sys_modal_protections_f5: 'Visualización de bordes con partículas',
     cfg_badge_messages:    'Mensajes en Inglés',
     cfg_copy:              'Copiar',
     cfg_copied:            'Copiado',
@@ -1764,6 +1782,15 @@ const TRANSLATIONS = {
     badge_optional:  'Optionnel',
     feat_spawn_shield: 'Bouclier de Spawn',
     feat_tab_list:   'Liste de Tab',
+    sys_protections_name: 'Protections',
+    sys_protections_desc: 'Système de revendication de terrain avec drapeaux et gestion des membres.',
+    sys_modal_protections_badge: 'Système de Revendication',
+    sys_modal_protections_desc: 'Un <strong>système de protection de terrain</strong> complet permettant aux joueurs de revendiquer des zones, gérer les accès, configurer les drapeaux et protéger leurs constructions.',
+    sys_modal_protections_f1: 'Placez des blocs de protection pour revendiquer un terrain',
+    sys_modal_protections_f2: 'Ajoutez/supprimez des membres et co-propriétaires par zone',
+    sys_modal_protections_f3: 'Drapeaux configurables : PvP, explosions, mobs, verrouillage',
+    sys_modal_protections_f4: 'Outils admin : give, viewhome, setowner',
+    sys_modal_protections_f5: 'Visualisation des bordures avec des particules',
     cfg_badge_messages:    'Messages en Anglais',
     cfg_copy:              'Copier',
     cfg_copied:            'Copié',
@@ -2107,233 +2134,6 @@ function injectTransitions() {
 /* ──────────────────────────────────────
    5. COMING SOON POPUP (index only)
 ────────────────────────────────────── */
-function injectComingSoonPopup() {
-  const lang = getLang();
-  const T = TRANSLATIONS[lang] || TRANSLATIONS['en'];
-
-  const style = document.createElement('style');
-  style.textContent = `
-    #cs-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.88);
-      backdrop-filter: blur(16px);
-      z-index: 99985;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0;
-      transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1);
-      pointer-events: none;
-    }
-    #cs-overlay.cs-visible {
-      opacity: 1;
-      pointer-events: all;
-    }
-    #cs-overlay.hiding {
-      opacity: 0;
-      pointer-events: none;
-    }
-    #cs-box {
-      position: relative;
-      background: #18181b;
-      border: 1px solid rgba(240,106,0,0.4);
-      border-radius: 6px;
-      max-width: 520px; width: 92%;
-      overflow: hidden;
-      transform: scale(0.94) translateY(16px);
-      opacity: 0;
-      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.4s;
-    }
-    #cs-overlay.cs-visible #cs-box {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-    #cs-top-line {
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #f06a00, #ff8c2a, #f06a00, transparent);
-    }
-    #cs-inner { padding: 32px 36px 28px; text-align: center; }
-    #cs-tag {
-      font-family: 'Space Mono', monospace; font-size: 9px;
-      letter-spacing: 4px; text-transform: uppercase;
-      color: #f06a00; margin-bottom: 18px;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-    }
-    #cs-tag::before, #cs-tag::after {
-      content: ''; flex: 1; height: 1px; max-width: 40px;
-      background: rgba(240,106,0,0.35);
-    }
-    #cs-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(38px, 8vw, 56px);
-      letter-spacing: 3px; line-height: 1;
-      color: #fff; margin-bottom: 4px;
-    }
-    #cs-sub {
-      font-family: 'Space Mono', monospace; font-size: 9px;
-      letter-spacing: 5px; text-transform: uppercase;
-      color: rgba(255,255,255,0.2); margin-bottom: 20px;
-    }
-    #cs-desc {
-      font-size: 13px; font-weight: 300;
-      color: #b0b0b8; line-height: 1.7;
-      max-width: 380px; margin: 0 auto 28px;
-    }
-    #cs-countdown {
-      display: flex; justify-content: center; gap: 2px;
-      margin-bottom: 28px;
-    }
-    .cs-unit {
-      background: rgba(240,106,0,0.06);
-      border: 1px solid rgba(240,106,0,0.2);
-      border-radius: 3px;
-      padding: 12px 16px;
-      min-width: 68px; text-align: center;
-    }
-    .cs-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 36px; color: #f06a00;
-      line-height: 1; letter-spacing: 2px;
-      display: block;
-    }
-    .cs-lbl {
-      font-family: 'Space Mono', monospace; font-size: 7px;
-      letter-spacing: 2px; text-transform: uppercase;
-      color: rgba(255,255,255,0.25); margin-top: 4px;
-      display: block;
-    }
-    .cs-sep {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px; color: rgba(240,106,0,0.3);
-      align-self: center; padding-bottom: 12px;
-    }
-    #cs-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-    #cs-discord {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 22px;
-      background: rgba(88,101,242,0.12);
-      border: 1px solid rgba(88,101,242,0.4);
-      border-radius: 3px;
-      font-family: 'Space Mono', monospace; font-size: 9px;
-      letter-spacing: 2px; text-transform: uppercase;
-      color: #7984f5; text-decoration: none;
-      cursor: pointer !important;
-      transition: background 0.2s, border-color 0.2s;
-    }
-    #cs-discord:hover { background: rgba(88,101,242,0.2); border-color: rgba(88,101,242,0.7); }
-    #cs-close {
-      position: absolute;
-      top: 12px; right: 12px;
-      width: 28px; height: 28px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 50%;
-      color: rgba(255,255,255,0.45);
-      font-size: 13px;
-      line-height: 1;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer !important;
-      transition: background 0.2s, border-color 0.2s, color 0.2s;
-      z-index: 10;
-    }
-    #cs-close:hover { background: rgba(240,106,0,0.15); border-color: #f06a00; color: #f06a00; }
-    #cs-bg-glow {
-      position: absolute; bottom: -80px; left: 50%;
-      transform: translateX(-50%);
-      width: 300px; height: 200px;
-      background: radial-gradient(ellipse, rgba(240,106,0,0.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    @media (max-width: 480px) {
-      #cs-inner { padding: 24px 20px 20px; }
-      .cs-unit { min-width: 54px; padding: 10px 10px; }
-      .cs-num { font-size: 28px; }
-    }
-  `;
-  document.head.appendChild(style);
-
-  const overlay = document.createElement('div');
-  overlay.id = 'cs-overlay';
-  overlay.innerHTML = `
-    <div id="cs-box">
-      <div id="cs-top-line"></div>
-      <button id="cs-close" aria-label="Close">✕</button>
-      <div id="cs-inner">
-        <div id="cs-tag">${T.popup_tag}</div>
-        <div id="cs-title">${T.popup_title}</div>
-        <div id="cs-sub">${T.popup_sub}</div>
-        <p id="cs-desc">${T.popup_desc}</p>
-        <div id="cs-countdown">
-          <div class="cs-unit"><span class="cs-num" id="cs-days">00</span><span class="cs-lbl" id="cs-days-lbl">${T.popup_days}</span></div>
-          <span class="cs-sep">:</span>
-          <div class="cs-unit"><span class="cs-num" id="cs-hours">00</span><span class="cs-lbl" id="cs-hours-lbl">${T.popup_hours}</span></div>
-          <span class="cs-sep">:</span>
-          <div class="cs-unit"><span class="cs-num" id="cs-mins">00</span><span class="cs-lbl" id="cs-mins-lbl">${T.popup_mins}</span></div>
-          <span class="cs-sep">:</span>
-          <div class="cs-unit"><span class="cs-num" id="cs-secs">00</span><span class="cs-lbl" id="cs-secs-lbl">${T.popup_secs}</span></div>
-        </div>
-        <div id="cs-actions">
-          <a id="cs-discord" href="https://discord.gg/xYJ7taj79v" target="_blank">
-            <svg width="14" height="14" viewBox="0 0 34 34" fill="none"><path d="M28.7 7.1a25.3 25.3 0 0 0-6.3-2 17.6 17.6 0 0 0-.8 1.6 23.4 23.4 0 0 0-7 0A17 17 0 0 0 13.7 5a25.2 25.2 0 0 0-6.3 2C3 12.4 2 17.5 2.5 22.6a25.4 25.4 0 0 0 7.8 4c.6-.8 1.1-1.7 1.6-2.6a16.7 16.7 0 0 1-2.4-1.1l.5-.4c5 2.3 10.4 2.3 15.4 0l.5.4a16 16 0 0 1-2.4 1.1c.5.9 1 1.8 1.6 2.6a25.3 25.3 0 0 0 7.8-4c.6-6-1-11-4.1-15.5ZM12.4 19.5c-1.5 0-2.8-1.4-2.8-3.1s1.2-3.1 2.8-3.1 2.8 1.4 2.8 3.1-1.2 3.1-2.8 3.1Zm10.3 0c-1.5 0-2.8-1.4-2.8-3.1s1.2-3.1 2.8-3.1 2.8 1.4 2.8 3.1-1.2 3.1-2.8 3.1Z" fill="currentColor"/></svg>
-            <span id="cs-discord-lbl">${T.popup_discord}</span>
-          </a>
-        </div>
-        <div id="cs-bg-glow"></div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  // Mostrar popup con pequeño timeout para que el navegador pinte primero el estado inicial
-  setTimeout(function() {
-    if (overlay.parentNode) overlay.classList.add('cs-visible');
-  }, 80);
-
-  // Countdown to April 18, 2026
-  const target = new Date('2026-04-18T00:00:00');
-  function tick() {
-    const now = new Date();
-    const diff = target - now;
-    if (diff <= 0) {
-      document.getElementById('cs-days').textContent  = '00';
-      document.getElementById('cs-hours').textContent = '00';
-      document.getElementById('cs-mins').textContent  = '00';
-      document.getElementById('cs-secs').textContent  = '00';
-      return;
-    }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    document.getElementById('cs-days').textContent  = String(d).padStart(2,'0');
-    document.getElementById('cs-hours').textContent = String(h).padStart(2,'0');
-    document.getElementById('cs-mins').textContent  = String(m).padStart(2,'0');
-    document.getElementById('cs-secs').textContent  = String(s).padStart(2,'0');
-  }
-  tick();
-  setInterval(tick, 1000);
-
-  function closePopup() {
-    overlay.classList.remove('cs-visible');
-    overlay.classList.add('hiding');
-    setTimeout(function() { if (overlay.parentNode) overlay.remove(); }, 420);
-  }
-  document.getElementById('cs-close').addEventListener('click', closePopup);
-  overlay.addEventListener('click', e => { if (e.target === overlay) closePopup(); });
-
-  // Re-translate popup labels when lang changes
-  window.__updatePopupLang = function(T) {
-    const safe = s => { const el = document.getElementById(s[0]); if (el) el.textContent = T[s[1]]; };
-    safe(['cs-tag',         'popup_tag']);
-    safe(['cs-sub',         'popup_sub']);
-    safe(['cs-desc',        'popup_desc']);
-    safe(['cs-days-lbl',    'popup_days']);
-    safe(['cs-hours-lbl',   'popup_hours']);
-    safe(['cs-mins-lbl',    'popup_mins']);
-    safe(['cs-secs-lbl',    'popup_secs']);
-    safe(['cs-discord-lbl', 'popup_discord']);
-    safe(['cs-close-lbl',   'popup_close']);
-    const titleEl = document.getElementById('cs-title');
-    if (titleEl) titleEl.innerHTML = T.popup_title;
-  };
-}
 
 /* ──────────────────────────────────────
    6. INIT — runs on every page
@@ -2355,15 +2155,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const l = btn.dataset.lang;
-      if (window.__updatePopupLang) {
-        window.__updatePopupLang(TRANSLATIONS[l] || TRANSLATIONS['en']);
-      }
     });
   });
 
-  // Coming Soon popup — index only
-  const page = location.pathname.split('/').pop() || 'index.html';
-  if (page === 'index.html' || page === '') {
-    injectComingSoonPopup();
-  }
 });
