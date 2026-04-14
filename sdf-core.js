@@ -113,6 +113,11 @@ const TRANSLATIONS = {
     cmd_deletekit: 'Deletes an existing kit from the system.',
     cmd_balance: 'Shows the player\'s balance. With argument, checks another player\'s balance (requires extra permission).',
     cmd_balancetop: 'Shows the ranking of the richest players on the server with a paginated interface.',
+    cmd_weather: 'Changes the weather on the server (sun/rain/thunder).',
+    cmd_skull: 'Gives you a player head with the specified username.',
+    cmd_kothzoneview: 'Shows information about the configured KOTH zones.',
+    cmd_spawnzoneview: 'Shows information about the configured spawn zones.',
+    cmd_afkzoneview: 'Shows information about the configured AFK zones.',
     cmd_pay: 'Transfers money to another server player.',
     cmd_eco: 'Manages player money. Allows giving, removing or setting balance directly.',
     cmd_msg: 'Sends a private message to another player.',
@@ -136,6 +141,7 @@ const TRANSLATIONS = {
     cmd_tpoffline: 'Teleports you to an offline player\'s last known position.',
     cmd_afk: 'Marks the player as AFK (away from keyboard). Deactivates automatically upon movement.',
     cmd_createafk: 'Creates a new AFK zone with the given name at the current position. Players inside receive benefits for being inactive.',
+    cmd_kothview: 'Shows information and status of the configured KOTH zones.',
     cmd_deleteafk: 'Permanently deletes an existing AFK zone from the server.',
     cmd_listafk: 'Lists all AFK zones configured on the server with their names and locations.',
     cmd_clancreate: 'Creates a new clan with the specified name. The player becomes the leader.',
@@ -1853,7 +1859,7 @@ function applyLang(lang) {
   //    that can't easily have data-i18n (e.g. mixed HTML titles)
   const page = (location.pathname.split('/').pop() || 'index.html').split('?')[0];
 
-  if (page === 'sdfcore.html' || page === 'sdfcore') {
+  if (page === 'index.html' || page === '') {
     setText('eyebrow-index-text', T.eyebrow_index);
     setHTML('tagline-index', T.tagline_index);
     setText('stat-features-label', T.stat_features);
