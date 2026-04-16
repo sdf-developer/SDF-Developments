@@ -1170,6 +1170,15 @@
         <div class="cmd-perm"><span class="perm-node">core.afkzone.view</span></div>
       </div>
 
+      <div class="cmd-card admin" data-cat="utility afkzone staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>afkzone hologram</div>
+          <div class="badge admin" data-i18n="badge_staff">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_afkzonehologram">Toggles the per-player private hologram inside the AFK zone. When enabled, each player in the zone sees only their own status hologram showing time spent, rewards collected and time until next reward. Uses Paper's entity visibility API to keep holograms private.</div>
+        <div class="cmd-perm"><span class="perm-node">core.afkzone.admin</span></div>
+      </div>
+
     </div>
   </div>
 
@@ -1368,6 +1377,15 @@
           <div class="badge usuario" data-i18n="badge_player">Player</div>
         </div>
         <div class="cmd-desc" data-i18n="cmd_clantopmoney">Shows the ranking of the best clans on the server ordered by money.</div>
+        <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
+      </div>
+
+      <div class="cmd-card usuario" data-cat="clan usuario combat">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>clan pvp</div>
+          <div class="badge usuario" data-i18n="badge_player">Player</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_clanpvp">Toggles friendly fire within the clan. When enabled, clan members can damage each other. Only the leader or officers can use this. Notifies all online members of the change.</div>
         <div class="cmd-perm"><span class="perm-node">core.clan</span></div>
       </div>
 
@@ -1584,6 +1602,88 @@
         <div class="cmd-desc" data-i18n="cmd_kothview">Shows information and status of the configured KOTH zones.</div>
         <div class="cmd-perm"><span class="perm-node">core.koth.admin</span></div>
       </div>
+    </div>
+  </div>
+
+  <!-- HOLOGRAMS -->
+  <div class="section" data-section="hologram">
+    <div class="section-header">
+      <span class="section-icon">💬</span>
+      <span class="section-title" data-i18n="sec_hologram">Hologram System</span>
+      <span class="section-count" id="count-hologram"></span>
+    </div>
+    <div class="cmd-grid">
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>hologram create <span style="color:#94a3b8;font-weight:300">&lt;name&gt; &lt;text&gt;</span></div>
+          <div class="badge admin" data-i18n="badge_staff">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_holocreate">Creates a new hologram at the executor's current position with the specified name and initial text line. The hologram persists across server restarts.</div>
+        <div class="cmd-aliases">Alias: <em>/hd create</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.hologram.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>hologram delete <span style="color:#94a3b8;font-weight:300">&lt;name&gt;</span></div>
+          <div class="badge admin" data-i18n="badge_staff">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_holodelete">Permanently deletes an existing hologram by name, removing it from the world and from the saved configuration.</div>
+        <div class="cmd-aliases">Alias: <em>/hd delete</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.hologram.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>hologram tp <span style="color:#94a3b8;font-weight:300">&lt;name&gt;</span></div>
+          <div class="badge admin" data-i18n="badge_staff">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_holotp">Teleports the executor to the location of the specified hologram. Useful for quickly finding or inspecting holograms placed anywhere in the world.</div>
+        <div class="cmd-aliases">Alias: <em>/hd tp</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.hologram.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>hologram movehere <span style="color:#94a3b8;font-weight:300">&lt;name&gt;</span></div>
+          <div class="badge admin" data-i18n="badge_staff">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_holomove">Moves an existing hologram to the executor's current position. The hologram's content is preserved; only its location changes.</div>
+        <div class="cmd-aliases">Alias: <em>/hd movehere</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.hologram.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>hologram list</div>
+          <div class="badge admin" data-i18n="badge_staff">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_hololist">Lists all holograms currently configured on the server, showing their name, world, coordinates and number of lines.</div>
+        <div class="cmd-aliases">Alias: <em>/hd list</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.hologram.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>hologram addline <span style="color:#94a3b8;font-weight:300">&lt;name&gt; &lt;text&gt;</span></div>
+          <div class="badge admin" data-i18n="badge_staff">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_holoaddline">Appends a new text line to the bottom of an existing hologram. Supports color codes and PlaceholderAPI variables.</div>
+        <div class="cmd-aliases">Alias: <em>/hd addline</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.hologram.admin</span></div>
+      </div>
+
+      <div class="cmd-card admin" data-cat="utility staff">
+        <div class="cmd-top">
+          <div class="cmd-name"><span>/</span>hologram removeline <span style="color:#94a3b8;font-weight:300">&lt;name&gt; &lt;line#&gt;</span></div>
+          <div class="badge admin" data-i18n="badge_staff">Staff</div>
+        </div>
+        <div class="cmd-desc" data-i18n="cmd_holoremoveline">Removes a specific line from a hologram by its line number (starting at 1). Tab-completes with the available line numbers for the selected hologram.</div>
+        <div class="cmd-aliases">Alias: <em>/hd removeline</em></div>
+        <div class="cmd-perm"><span class="perm-node">core.hologram.admin</span></div>
+      </div>
+
     </div>
   </div>
 
