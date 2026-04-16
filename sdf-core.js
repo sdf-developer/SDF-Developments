@@ -317,8 +317,8 @@ const TRANSLATIONS = {
     buy_price_label: 'Launch price',
     buy_title:       'SDF Survival Core',
     buy_desc:        'Complete all-in-one plugin for Minecraft Survival servers. 400+ features, 150+ commands, MySQL support, Lunar Client integration and much more.',
-    buy_btn:         'Coming Soon — BuildByBit',
-    buy_note:        'Available soon on BuildByBit. Join Discord to be notified on launch.',
+    buy_btn:         'Click here to get it on BuiltByBit',
+    buy_note:        'Available now on BuiltByBit. Click the button above to purchase.',
     buy_inc_title:   "What's included",
     buy_f1: '400+ features included', buy_f2: '150+ commands',
     buy_f3: 'MySQL database support', buy_f4: 'Lunar Client integration',
@@ -411,6 +411,17 @@ const TRANSLATIONS = {
     cl_v1_desc: 'The first public release of <strong>SDF Survival Core</strong> — a complete, all-in-one plugin built from the ground up for modern Survival servers running Minecraft 1.21. Every core system is included, fully documented and ready to configure.',
     cl_core_systems: 'Core Systems', cl_player_features: 'Player Features', cl_staff_admin: 'Staff & Admin',
     cl_performance: 'Performance', cl_integrations: 'Integrations', cl_configuration: 'Configuration',
+    /* v1.0.2 */
+    cl_v102_date: 'April 2026',
+    cl_v102_desc: 'Maintenance update focused on <strong>hologram systems</strong>, GUI improvements and minor bug fixes.',
+    cl_v100_date: 'April 2026',
+    cl_new_features: 'New Features',
+    cl_fixes: 'Bug Fixes',
+    cl_102_holograms: 'Implemented using multiple subcommands',
+    cl_102_afkhologram: 'Added, can be toggled on and off',
+    cl_102_protgui: 'GUI for the implemented protection system',
+    cl_102_clangui: 'GUI for the clan system implemented',
+    cl_102_bugfixes: 'Minor bugs fixed',
     cl_koth: 'King of the Hill with scheduling, capture zones and rewards',
     cl_clans: 'Full management: alliances, bank, chat, leaderboards',
     cl_combat: 'Combat tags, logout detection, damage indicators',
@@ -921,8 +932,8 @@ const TRANSLATIONS = {
     buy_price_label: 'Precio de lanzamiento',
     buy_title:       'SDF Survival Core',
     buy_desc:        'Plugin todo en uno para servidores Survival de Minecraft. +400 funciones, +150 comandos, soporte MySQL, integración con Lunar Client y mucho más.',
-    buy_btn:         'Próximamente — BuildByBit',
-    buy_note:        'Disponible próximamente en BuildByBit. Únete al Discord para recibir notificaciones.',
+    buy_btn:         'Pincha aquí para obtenerlo en BuiltByBit',
+    buy_note:        'Disponible ahora en BuiltByBit. Haz clic en el botón de arriba para comprarlo.',
     buy_inc_title:   'Qué incluye',
     buy_f1: '+400 funciones incluidas', buy_f2: '+150 comandos',
     buy_f3: 'Soporte MySQL',            buy_f4: 'Integración Lunar Client',
@@ -1239,6 +1250,20 @@ const TRANSLATIONS = {
     /* DEPS SPLIT */
     deps_required_label:   'Obligatorio',
     deps_optional_label:   'Opcional',
+    /* v1.0.2 CHANGELOG */
+    cl_v102_date: 'Abril 2026',
+    cl_v102_desc: 'Actualización de mantenimiento centrada en los <strong>sistemas de hologramas</strong>, mejoras de GUI y corrección de errores menores.',
+    cl_v100_date: 'Abril 2026',
+    cl_new_features: 'Nuevas Funciones',
+    cl_fixes: 'Correcciones',
+    cl_102_holograms: 'Implementados mediante múltiples subcomandos',
+    cl_102_afkhologram: 'Añadido, se puede activar y desactivar',
+    cl_102_protgui: 'GUI para el sistema de protecciones implementado',
+    cl_102_clangui: 'GUI para el sistema de clanes implementada',
+    cl_102_bugfixes: 'Errores menores corregidos',
+    /* BUY */
+    buy_btn: 'Pincha aquí para obtenerlo en BuiltByBit',
+    buy_note: 'Disponible ahora en BuiltByBit. Haz clic en el botón de arriba para comprarlo.',
   },
   fr: {
     nav_home:        'Accueil',
@@ -1525,8 +1550,8 @@ const TRANSLATIONS = {
     buy_price_label: 'Prix de lancement',
     buy_title:       'SDF Survival Core',
     buy_desc:        'Plugin tout-en-un pour serveurs Survival Minecraft. 400+ fonctions, 150+ commandes, support MySQL, intégration Lunar Client et bien plus.',
-    buy_btn:         'Bientôt — BuildByBit',
-    buy_note:        'Disponible bientôt sur BuildByBit. Rejoignez Discord pour être notifié au lancement.',
+    buy_btn:         'Cliquez ici pour l\'obtenir sur BuiltByBit',
+    buy_note:        'Disponible maintenant sur BuiltByBit. Cliquez sur le bouton ci-dessus pour acheter.',
     buy_inc_title:   'Ce qui est inclus',
     buy_f1: '400+ fonctions incluses', buy_f2: '150+ commandes',
     buy_f3: 'Support MySQL',           buy_f4: 'Intégration Lunar Client',
@@ -1842,6 +1867,20 @@ const TRANSLATIONS = {
     /* DEPS SPLIT */
     deps_required_label:   'Obligatoire',
     deps_optional_label:   'Optionnel',
+    /* v1.0.2 CHANGELOG */
+    cl_v102_date: 'Avril 2026',
+    cl_v102_desc: 'Mise à jour de maintenance axée sur les <strong>systèmes d\'hologrammes</strong>, améliorations de l\'interface et corrections de bugs mineurs.',
+    cl_v100_date: 'Avril 2026',
+    cl_new_features: 'Nouvelles Fonctionnalités',
+    cl_fixes: 'Corrections',
+    cl_102_holograms: 'Implémentés via plusieurs sous-commandes',
+    cl_102_afkhologram: 'Ajouté, peut être activé et désactivé',
+    cl_102_protgui: 'Interface GUI pour le système de protection implémenté',
+    cl_102_clangui: 'Interface GUI pour le système de clans implémentée',
+    cl_102_bugfixes: 'Corrections de bugs mineurs',
+    /* BUY */
+    buy_btn: 'Cliquez ici pour l\'obtenir sur BuiltByBit',
+    buy_note: 'Disponible maintenant sur BuiltByBit. Cliquez sur le bouton ci-dessus pour acheter.',
   }
 };
 
@@ -2012,7 +2051,7 @@ function applyLang(lang) {
   if (page === 'buy.html') {
     const buySub = document.querySelector('.main-title .sub');
     if (buySub && T.sub_buy) buySub.textContent = T.sub_buy;
-    const ids = ['buy-soon-badge','buy-price-label','buy-title','buy-desc','buy-btn','buy-note','buy-inc-title','buy-faq-title',
+    const ids = ['buy-soon-badge','buy-price-label','buy-title','buy-desc','buy-btn-text','buy-note','buy-inc-title','buy-faq-title',
       'buy-f1','buy-f2','buy-f3','buy-f4','buy-f5','buy-f6','buy-f7','buy-f8',
       'buy-q1','buy-a1','buy-q2','buy-a2','buy-q3','buy-a3','buy-q4','buy-a4'];
     const keys = ['buy_soon_badge','buy_price_label','buy_title','buy_desc','buy_btn','buy_note','buy_inc_title','buy_faq_title',
